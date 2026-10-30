@@ -19,6 +19,10 @@ setup() {
     sed -i 's|^];|    OGame\\Sim\\SimServiceProvider::class,\n];|' "$OGX/bootstrap/providers.php"
   [ -f "$OGX/.env" ] || cp "$OGX/.env.example" "$OGX/.env"
   sed -i 's/^BROADCAST_CONNECTION=.*/BROADCAST_CONNECTION=log/' "$OGX/.env"
+  # Upstream hardcodes the Rust engine for expedition pirate/alien fights. The
+  # sim has no Rust lib (battle_engine=php), so honour the setting there too.
+  sed -i 's|\$battleEngine = new RustBattleEngine(|$battleEngine = new (($this->settings->battleEngine() === '"'"'php'"'"') ? \\OGame\\GameMissions\\BattleEngine\\PhpBattleEngine::class : RustBattleEngine::class)(|' \
+    "$OGX/app/GameMissions/ExpeditionMission.php"
 }
 
 cmd="${1:-}"; shift || true
