@@ -128,14 +128,23 @@ class Run:
         self.log(f"server init {info}")
         self.accounts = self.build_accounts()
         klass = self.cfg["universe"].get("class", "")
-        for g in self.cfg["groups"]:
-            res = server.seed(g["prefix"], g["count"], klass=klass)
-            self.log(f"seeded {g['name']}: {len(res['created'])}")
-        farms = self.cfg.get("farms")
-        if farms and farms.get("count"):
-            res = server.seed("farm", farms["count"], inactive_days=farms.get("inactive_days", 10),
-                              mines=farms.get("mines", 10), resources=farms.get("resources", 0))
-            self.log(f"seeded farms: {len(res['created'])}")
+        # Seed round-robin (one account per group, then a farm) so planets are
+        # interleaved across systems: every raider has farms within scan range
+        # and no group gets a systematically better neighbourhood.
+        farms = self.cfg.get("farms") or {}
+        queues = [[(g["prefix"], i + 1, {"klass": klass}) for i in range(g["count"])]
+                  for g in self.cfg["groups"]]
+        queues.append([("farm", i + 1, {"inactive_days": farms.get("inactive_days", 10),
+                                         "mines": farms.get("mines", 10),
+                                         "resources": farms.get("resources", 0)})
+                       for i in range(farms.get("count", 0))])
+        seeded = 0
+        while any(queues):
+            for q in queues:
+                if q:
+                    prefix, num, opts = q.pop(0)
+                    seeded += len(server.seed(prefix, 1, start=num, **opts)["created"])
+        self.log(f"seeded {seeded} accounts (interleaved)")
         now = server.clock()
         ttl = self.policy_ttl_hours()
         for a in self.accounts:

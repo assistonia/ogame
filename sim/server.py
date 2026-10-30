@@ -46,10 +46,11 @@ def clock() -> int:
     return int(artisan_json("ogamex:sim:clock")["clock"])
 
 
-def seed(prefix: str, count: int, *, pad: int = 2, klass: str = "", inactive_days: int = 0,
-         mines: int = 0, resources: int = 0) -> dict:
+def seed(prefix: str, count: int, *, start: int = 1, pad: int = 2, klass: str = "",
+         inactive_days: int = 0, mines: int = 0, resources: int = 0) -> dict:
     return artisan_json(
-        "ogamex:sim:seed-bots", f"--prefix={prefix}", f"--count={count}", f"--pad={pad}",
+        "ogamex:sim:seed-bots", f"--prefix={prefix}", f"--count={count}", f"--start={start}",
+        f"--pad={pad}",
         f"--class={klass}", f"--inactive-days={inactive_days}", f"--mines={mines}",
         f"--resources={resources}",
     )
