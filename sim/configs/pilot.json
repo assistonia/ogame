@@ -1,6 +1,6 @@
 {
   "name": "pilot",
-  "universe": {"speed": 10, "turn_seconds": 900, "turns": 96, "class": "collector"},
+  "universe": {"speed": 10, "turn_seconds": 900, "turns": 192, "class": "collector"},
   "groups": [
     {"name": "classic", "prefix": "cl", "count": 8, "controller": "classic",
      "personalities": ["miner", "miner", "raider", "raider", "turtle", "turtle", "explorer", "hybrid"]},

@@ -94,8 +94,18 @@ class SimSeedBots extends Command
             }
 
             // Compute production stats now so the first clock advance already produces.
-            foreach ($players->make($user->id, true)->planets->all() as $planet) {
+            $player = $players->make($user->id, true);
+            foreach ($player->planets->all() as $planet) {
                 $planet->update();
+            }
+
+            // Bots read their current planet straight from the DB (users.planet_current),
+            // which the browser flow only sets lazily. Point it at the homeworld.
+            $home = $player->planets->first();
+            if ($home !== null) {
+                $user->refresh();
+                $user->planet_current = $home->getPlanetId();
+                $user->save();
             }
 
             // Keep the inactive timestamp: createFor() may touch the user row.
