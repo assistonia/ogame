@@ -1,0 +1,142 @@
+{
+  "strategy_version": 3,
+  "updated_at": "2026-07-31T05:59:49Z",
+  "ttl_hours": 2,
+  "personality": "turtle",
+  "autonomy": "full",
+  "action_plan": [
+    "build",
+    "research",
+    "ship",
+    "expedition",
+    "spy",
+    "raid",
+    "harvest",
+    "colonize",
+    "transfers",
+    "development",
+    "production",
+    "moon_development",
+    "phalanx_scans",
+    "jump_gate",
+    "intercepts",
+    "defense",
+    "fleetsave",
+    "develop_colonies",
+    "diplomacy"
+  ],
+  "plans_version": 1,
+  "plans": {
+    "version": 1,
+    "colonize": [],
+    "transfers": [],
+    "development": [],
+    "production": [],
+    "moon_development": [],
+    "phalanx_scans": [],
+    "jump_gate": [],
+    "intercepts": []
+  },
+  "build_priority": [
+    "metal_store",
+    "crystal_store",
+    "deuterium_store",
+    "robot_factory",
+    "research_lab",
+    "shipyard",
+    "metal_mine",
+    "crystal_mine",
+    "deuterium_synthesizer",
+    "solar_plant"
+  ],
+  "research_priority": [],
+  "ship_priority": [],
+  "ship_strategy": {
+    "reinvestment_ratio": 0.4,
+    "doctrine": "expeditioneer",
+    "weights": {
+      "203": 35,
+      "219": 30,
+      "209": 15,
+      "206": 10,
+      "204": 5,
+      "207": 5
+    }
+  },
+  "diplomacy": {
+    "version": 1,
+    "messages": []
+  },
+  "aggression": {
+    "min_loot": 150000,
+    "max_active_missions": 1
+  },
+  "targeting": {
+    "allow_strong_targets": false,
+    "allow_defended_targets": false,
+    "excluded_systems": [],
+    "priority_targets": []
+  },
+  "limits": {
+    "scan_span": 2,
+    "spy_global_cooldown_sec": 600,
+    "spy_target_cooldown_sec": 1200,
+    "attack_target_cooldown_sec": 1500,
+    "bashing_max_attacks": 6,
+    "fleet_risk_percent": 15,
+    "min_fleet_value_limit": 0,
+    "max_attack_eta_sec": 0,
+    "max_planets": 99,
+    "reserve_fleet_slots": 0,
+    "harvest_max_concurrent": 0,
+    "harvest_cooldown_sec": 0,
+    "harvest_reserved_raid_slots": 0,
+    "max_active_fleetsaves": 0,
+    "colony_scan_span": 3,
+    "colonize_cooldown_sec": 0,
+    "use_server_expedition_slots": true,
+    "expedition_risk_percent": 15,
+    "expedition_total_exposure_percent": 10
+  },
+  "defense_ratio": 0.3,
+  "defense_strategy": {
+    "mode": "adaptive",
+    "stored_loot_multiplier": 0.8,
+    "production_hours": 8,
+    "rebuild_on_attack": true
+  },
+  "fleetsave": {
+    "mode": "adaptive",
+    "min_value": 0
+  },
+  "energy_target": 0,
+  "secondary_goals": {
+    "deathstar": {
+      "mode": "pause",
+      "reason": "이번 틱 Deathstar는 pause. 정본 홈 94(1:6:11)는 Shipyard 10/12, Research Lab 10/12, Graviton 0/1로 각각 2·2·1 단계가 부족하다. Hyperspace Drive 8과 Hyperspace Technology 10만 충족한다. 사용가능 에너지는 458/300000으로 299542 부족하며, 최선의 온도 32도 행성도 약 10698기의 노출 위성과 크리스탈 21396000·듀테륨 5349000을 요구한다. Nanite 0이고 unit 큐가 이미 점유되어 위성·Deathstar가 조선소를 독점하면 원정·방어·균형 경제의 순성장과 생존을 훼손한다. planet_options의 다른 행성도 에너지 gap이 299453~299872이고 최저온도 행성은 약 15781기가 필요하다. persisted_state={} 및 risk_rejections=[]는 성공 증거가 아니다. Shipyard 12·Research Lab 12·Nanite 1 이상·안전한 에너지 300000·노출 허용·큐 여유가 함께 확인될 때만 pursue를 재검토한다.",
+      "planet_id": null,
+      "budget": {
+        "max_satellite_batch": 64,
+        "satellite_horizon_seconds": 21600,
+        "max_deathstar_batch": 1,
+        "deathstar_horizon_seconds": 604800,
+        "target_deathstars": 1,
+        "max_resource_commitment_pct": 35,
+        "reserve_resources": {
+          "metal": 100000,
+          "crystal": 100000,
+          "deuterium": 50000
+        }
+      },
+      "risk": {
+        "allow_exposed_satellites": false,
+        "max_exposed_satellites": 12000,
+        "min_nanite_level": 1,
+        "satellites_without_nanite_limit": 1000
+      }
+    }
+  },
+  "note": "turtle/full 유지. 최근 원정은 자원·함선 발견 성과가 있어 서버 원정 슬롯을 15% 편·10% 전체 위험예산으로 우선 채우고 PF·대형화물 중심으로 재투자한다. raid_opportunity=none이고 recent_spy는 stale이므로 fresh full-intel과 양수 순EV 전까지 약탈·수거·요격은 보류한다. 전 행성 에너지는 양수라 energy_target=0이며, 저장고·균형 경제·적응형 방어와 식민지 개발을 유지한다. 직전 정책의 turtle/full·원정 우선·Deathstar pause는 성과와 현재 제약이 일치해 유지하고, 수동 ship_priority만 비워 유동 자원과 큐 기회비용에 맡긴다.",
+  "activated_at": "2026-07-31T05:59:49Z",
+  "activation_id": "be1aafd5b16235f7f6dfa4f6"
+}

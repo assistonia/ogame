@@ -1,0 +1,141 @@
+{
+  "strategy_version": 3,
+  "updated_at": "2026-07-31T06:02:29Z",
+  "ttl_hours": 2,
+  "personality": "hybrid",
+  "autonomy": "full",
+  "action_plan": [
+    "build",
+    "research",
+    "ship",
+    "expedition",
+    "spy",
+    "raid",
+    "harvest",
+    "colonize",
+    "transfers",
+    "development",
+    "production",
+    "moon_development",
+    "phalanx_scans",
+    "jump_gate",
+    "intercepts",
+    "defense",
+    "fleetsave",
+    "develop_colonies",
+    "diplomacy"
+  ],
+  "plans_version": 1,
+  "plans": {
+    "version": 1,
+    "colonize": [],
+    "transfers": [],
+    "development": [],
+    "production": [],
+    "moon_development": [],
+    "phalanx_scans": [],
+    "jump_gate": [],
+    "intercepts": []
+  },
+  "build_priority": [
+    "metal_store",
+    "crystal_store",
+    "deuterium_store",
+    "crystal_mine",
+    "metal_mine",
+    "deuterium_synthesizer",
+    "robot_factory",
+    "research_lab",
+    "shipyard",
+    "solar_plant"
+  ],
+  "research_priority": [],
+  "ship_priority": [],
+  "ship_strategy": {
+    "reinvestment_ratio": 0.35,
+    "doctrine": "expeditioneer",
+    "weights": {
+      "203": 35,
+      "219": 30,
+      "209": 15,
+      "206": 10,
+      "202": 10
+    }
+  },
+  "diplomacy": {
+    "version": 1,
+    "messages": []
+  },
+  "aggression": {
+    "min_loot": 15000,
+    "max_active_missions": 1
+  },
+  "targeting": {
+    "allow_strong_targets": false,
+    "allow_defended_targets": false,
+    "excluded_systems": [],
+    "priority_targets": []
+  },
+  "limits": {
+    "scan_span": 20,
+    "spy_global_cooldown_sec": 600,
+    "spy_target_cooldown_sec": 1200,
+    "attack_target_cooldown_sec": 1500,
+    "bashing_max_attacks": 6,
+    "fleet_risk_percent": 25,
+    "min_fleet_value_limit": 0,
+    "max_attack_eta_sec": 0,
+    "max_planets": 99,
+    "reserve_fleet_slots": 0,
+    "harvest_max_concurrent": 0,
+    "harvest_cooldown_sec": 0,
+    "harvest_reserved_raid_slots": 0,
+    "max_active_fleetsaves": 0,
+    "colony_scan_span": 3,
+    "colonize_cooldown_sec": 0,
+    "use_server_expedition_slots": true,
+    "expedition_risk_percent": 25,
+    "expedition_total_exposure_percent": 80
+  },
+  "defense_ratio": 0.2,
+  "defense_strategy": {
+    "mode": "adaptive",
+    "stored_loot_multiplier": 0.8,
+    "production_hours": 8,
+    "rebuild_on_attack": true
+  },
+  "fleetsave": {
+    "mode": "adaptive",
+    "min_value": 0
+  },
+  "energy_target": 0,
+  "secondary_goals": {
+    "deathstar": {
+      "mode": "pause",
+      "reason": "pause: Graviton은 0/1이며 사용가능 에너지는 4,997/300,000으로 295,003 부족하다. 후보 197은 연구소·조선소 12/12지만 Nanite 0, 건설 큐 깊이 5·조선소 큐 깊이 13이고 약 9,517기의 노출 위성이 필요하다. 더 효율적인 후보 341도 온도 77에서 약 8,320기의 노출 위성이 필요하지만 연구소·조선소 10/11과 Nanite 0이다. exposed-satellites-not-authorized 및 nanite-build-time-threshold 거절과 큐 독점 기회비용이 지속되어 저장고 해소·광산 복리·원정 재투자·생존의 순EV가 우세하다. 두 달은 partial이라 시설·필드·큐·쿨다운을 확인할 수 없어 달 기반 보완도 평가에 그친다.",
+      "planet_id": 197,
+      "budget": {
+        "max_satellite_batch": 64,
+        "satellite_horizon_seconds": 21600,
+        "max_deathstar_batch": 1,
+        "deathstar_horizon_seconds": 604800,
+        "target_deathstars": 1,
+        "max_resource_commitment_pct": 35,
+        "reserve_resources": {
+          "metal": 100000,
+          "crystal": 100000,
+          "deuterium": 50000
+        }
+      },
+      "risk": {
+        "allow_exposed_satellites": false,
+        "max_exposed_satellites": 12000,
+        "min_nanite_level": 1,
+        "satellites_without_nanite_limit": 1000
+      }
+    }
+  },
+  "note": "중재자형 hybrid/full을 유지한다. 저장고와 다행성 최소선·광산 성장을 우선하고, Discoverer 원정 슬롯은 PF 1기와 충분한 대형화물을 균등 운용한다. raid_opportunity=none이므로 fresh full-intel 양수 순EV가 확인될 때만 단일 보수 약탈·수거를 허용한다. 직전 정책의 원정·균형 성장·adaptive 생존 레버는 유지하고, 함대 재투자율은 실질자산 성장 저조 교훈을 반영해 35%로 유지하며 Deathstar pause와 불완전한 달 관측 보류도 유지한다.",
+  "activated_at": "2026-07-31T06:02:29Z",
+  "activation_id": "0ff49cd574ca281bf0dc7e08"
+}

@@ -1,0 +1,28 @@
+{
+  "events": [
+    {
+      "at": "2026-07-12 14:46:01",
+      "label": "battle-sim + sizing shadow"
+    },
+    {
+      "at": "2026-07-12 16:18:06",
+      "label": "Part 2 직전 기준선 재시작"
+    },
+    {
+      "at": "2026-07-12 17:28:01",
+      "label": "Part 2 묶음: tech/base-defense/turtle/scorecard/preflight"
+    },
+    {
+      "at": "2026-07-12 17:48:01",
+      "label": "계정 전체 함선 상한 + 안정화"
+    },
+    {
+      "at": "2026-07-12 18:02:01",
+      "label": "전투 알림 probe-only 필터 + collector"
+    },
+    {
+      "at": "2026-07-12 18:32:02",
+      "label": "preflight cohort + sizing 자동 재채점"
+    }
+  ]
+}

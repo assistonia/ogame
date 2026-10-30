@@ -1,0 +1,140 @@
+{
+  "strategy_version": 3,
+  "updated_at": "2026-07-31T06:03:10Z",
+  "ttl_hours": 2,
+  "personality": "raider",
+  "autonomy": "full",
+  "action_plan": [
+    "expedition",
+    "spy",
+    "raid",
+    "harvest",
+    "build",
+    "research",
+    "ship",
+    "colonize",
+    "transfers",
+    "development",
+    "production",
+    "moon_development",
+    "phalanx_scans",
+    "jump_gate",
+    "intercepts",
+    "defense",
+    "fleetsave",
+    "develop_colonies",
+    "diplomacy"
+  ],
+  "plans_version": 1,
+  "plans": {
+    "version": 1,
+    "colonize": [],
+    "transfers": [],
+    "development": [],
+    "production": [],
+    "moon_development": [],
+    "phalanx_scans": [],
+    "jump_gate": [],
+    "intercepts": []
+  },
+  "build_priority": [
+    "crystal_mine",
+    "metal_mine",
+    "deuterium_synthesizer",
+    "robot_factory",
+    "research_lab",
+    "shipyard",
+    "metal_store",
+    "crystal_store",
+    "deuterium_store",
+    "solar_plant"
+  ],
+  "research_priority": [],
+  "ship_priority": [],
+  "ship_strategy": {
+    "reinvestment_ratio": 0.7,
+    "doctrine": "expeditioneer",
+    "weights": {
+      "203": 45,
+      "219": 35,
+      "209": 10,
+      "206": 10
+    }
+  },
+  "diplomacy": {
+    "version": 1,
+    "messages": []
+  },
+  "aggression": {
+    "min_loot": 50000,
+    "max_active_missions": 3
+  },
+  "targeting": {
+    "allow_strong_targets": false,
+    "allow_defended_targets": false,
+    "excluded_systems": [],
+    "priority_targets": []
+  },
+  "limits": {
+    "scan_span": 20,
+    "spy_global_cooldown_sec": 600,
+    "spy_target_cooldown_sec": 1200,
+    "attack_target_cooldown_sec": 1500,
+    "bashing_max_attacks": 6,
+    "fleet_risk_percent": 100,
+    "min_fleet_value_limit": 0,
+    "max_attack_eta_sec": 0,
+    "max_planets": 99,
+    "reserve_fleet_slots": 0,
+    "harvest_max_concurrent": 0,
+    "harvest_cooldown_sec": 0,
+    "harvest_reserved_raid_slots": 0,
+    "max_active_fleetsaves": 0,
+    "colony_scan_span": 3,
+    "colonize_cooldown_sec": 0,
+    "use_server_expedition_slots": true,
+    "expedition_risk_percent": 70,
+    "expedition_total_exposure_percent": 70
+  },
+  "defense_ratio": 0.3,
+  "defense_strategy": {
+    "mode": "adaptive",
+    "stored_loot_multiplier": 0.8,
+    "production_hours": 8,
+    "rebuild_on_attack": true
+  },
+  "fleetsave": {
+    "mode": "adaptive",
+    "min_value": 0
+  },
+  "energy_target": 0,
+  "secondary_goals": {
+    "deathstar": {
+      "mode": "pause",
+      "reason": "Deathstar는 이번 틱에도 부차 목표로 전략적 보류한다. 홈 98(1:22:5)은 Shipyard 12·Hyperspace Drive 8·Hyperspace Technology 11·Research Lab 12로 시설 선행조건은 충족하지만 Graviton 1이 없어 연구 격차가 1이고 사용가능 에너지는 68931으로 필요 300000보다 231069 부족하다. 최선 후보 홈은 49도, 위성 1기당 31에너지라 약 7454기가 더 필요하며 계산 위성 비용은 crystal 14908000·deuterium 3727000이다. 위성은 노출되고 Nanite 0이며 조선소 unit 큐가 12개 항목으로 점유 중이다. 식민지의 에너지도 219~503으로 약 30만 부족하고 달 3기는 partial/unavailable이라 안전한 위성·달·큐 계획을 확정할 수 없다. persisted risk rejection인 exposed-satellites-not-authorized와 nanite-build-time-threshold를 존중하며, 위성 장기 생산시간과 조선소 독점의 기회비용이 원정 재투자·광산·함대 생존의 양수 순성장보다 크므로 조건이 바뀔 때까지 pause한다.",
+      "planet_id": 98,
+      "budget": {
+        "max_satellite_batch": 64,
+        "satellite_horizon_seconds": 21600,
+        "max_deathstar_batch": 1,
+        "deathstar_horizon_seconds": 604800,
+        "target_deathstars": 1,
+        "max_resource_commitment_pct": 35,
+        "reserve_resources": {
+          "metal": 100000,
+          "crystal": 100000,
+          "deuterium": 50000
+        }
+      },
+      "risk": {
+        "allow_exposed_satellites": false,
+        "max_exposed_satellites": 12000,
+        "min_nanite_level": 1,
+        "satellites_without_nanite_limit": 1000
+      }
+    }
+  },
+  "note": "전부 원정 성장에 건다! 탐험가 보너스의 서버 슬롯을 먼저 PF 1기씩 채우고 대형화물·PF에 70% 재투자한다. 남는 슬롯은 fresh full-intel 정찰 뒤 예상약탈+양측 데브리-기대손실-연료가 양수일 때만 약탈·수거하며, 최근 raid opportunity none은 성공으로 해석하지 않는다. 직전 원정 우선·adaptive 생존·Deathstar pause는 유지하고, 최근 원정 자원·함선 획득은 유지 근거로 삼되 구간별 실질자산 negative는 장기 인과로 단정하지 않는다.",
+  "activated_at": "2026-07-31T06:03:10Z",
+  "activation_id": "8302d00ab8fc272abe7d35f6"
+}

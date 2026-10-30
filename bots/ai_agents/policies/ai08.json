@@ -1,0 +1,143 @@
+{
+  "strategy_version": 3,
+  "updated_at": "2026-07-31T06:04:33Z",
+  "ttl_hours": 2,
+  "personality": "miner",
+  "autonomy": "full",
+  "action_plan": [
+    "build",
+    "research",
+    "ship",
+    "expedition",
+    "spy",
+    "raid",
+    "harvest",
+    "colonize",
+    "transfers",
+    "development",
+    "production",
+    "moon_development",
+    "phalanx_scans",
+    "jump_gate",
+    "intercepts",
+    "defense",
+    "fleetsave",
+    "develop_colonies",
+    "diplomacy"
+  ],
+  "plans_version": 1,
+  "plans": {
+    "version": 1,
+    "colonize": [],
+    "transfers": [],
+    "development": [],
+    "production": [],
+    "moon_development": [],
+    "phalanx_scans": [],
+    "jump_gate": [],
+    "intercepts": []
+  },
+  "build_priority": [
+    "metal_store",
+    "crystal_store",
+    "deuterium_store",
+    "metal_mine",
+    "crystal_mine",
+    "deuterium_synthesizer",
+    "solar_plant",
+    "robot_factory",
+    "research_lab",
+    "shipyard"
+  ],
+  "research_priority": [],
+  "ship_priority": [],
+  "ship_strategy": {
+    "reinvestment_ratio": 0.28,
+    "doctrine": "expeditioneer",
+    "weights": {
+      "203": 45,
+      "219": 25,
+      "206": 12,
+      "215": 8,
+      "209": 5,
+      "202": 5
+    }
+  },
+  "diplomacy": {
+    "version": 1,
+    "messages": []
+  },
+  "aggression": {
+    "min_loot": 50000,
+    "max_active_missions": 3
+  },
+  "targeting": {
+    "allow_strong_targets": true,
+    "allow_defended_targets": true,
+    "excluded_systems": [],
+    "priority_targets": []
+  },
+  "limits": {
+    "scan_span": 2,
+    "spy_global_cooldown_sec": 600,
+    "spy_target_cooldown_sec": 1200,
+    "attack_target_cooldown_sec": 1500,
+    "bashing_max_attacks": 6,
+    "fleet_risk_percent": 60,
+    "min_fleet_value_limit": 0,
+    "max_attack_eta_sec": 0,
+    "max_planets": 99,
+    "reserve_fleet_slots": 0,
+    "harvest_max_concurrent": 0,
+    "harvest_cooldown_sec": 0,
+    "harvest_reserved_raid_slots": 0,
+    "max_active_fleetsaves": 0,
+    "colony_scan_span": 3,
+    "colonize_cooldown_sec": 0,
+    "use_server_expedition_slots": true,
+    "expedition_risk_percent": 60,
+    "expedition_total_exposure_percent": 60
+  },
+  "defense_ratio": 0.3,
+  "defense_strategy": {
+    "mode": "adaptive",
+    "stored_loot_multiplier": 0.8,
+    "production_hours": 8,
+    "rebuild_on_attack": true
+  },
+  "fleetsave": {
+    "mode": "adaptive",
+    "min_value": 0
+  },
+  "energy_target": 0,
+  "secondary_goals": {
+    "deathstar": {
+      "mode": "pause",
+      "reason": "Shipyard 12, Hyperspace Drive 14, Hyperspace Technology 17, Research Lab 14는 충족했지만 Graviton 1과 사용가능 에너지 300000 조건이 미충족이다. 정본 홈 100(1:30:4)은 에너지 29548로 270452 부족해 약 7310 위성이 필요하고, 식민지 141/194는 각각 약 10333/11090기가 필요하다. 위성은 노출되고 방어력 0이며 예상 비용은 crystal 14620000과 deuterium 3655000이다. Nanite는 홈 0이고 건설·조선 큐가 배타적이며 risk_rejections에 exposed-satellites-not-authorized와 nanite-build-time-threshold가 남아 있다. 연구 큐도 111로 busy이므로 광산·저장고·생존·양수 EV 원정의 순성장과 큐 기회비용을 희생하지 않고 보류한다.",
+      "planet_id": null,
+      "budget": {
+        "max_satellite_batch": 64,
+        "satellite_horizon_seconds": 21600,
+        "max_deathstar_batch": 1,
+        "deathstar_horizon_seconds": 604800,
+        "target_deathstars": 1,
+        "max_resource_commitment_pct": 35,
+        "reserve_resources": {
+          "metal": 100000,
+          "crystal": 100000,
+          "deuterium": 50000
+        }
+      },
+      "risk": {
+        "allow_exposed_satellites": false,
+        "max_exposed_satellites": 12000,
+        "min_nanite_level": 1,
+        "satellites_without_nanite_limit": 1000
+      }
+    }
+  },
+  "note": "지었다! 저장고 병목을 먼저 풀고 모든 ready 식민지의 생산 큐를 계속 채운다. Discoverer 원정은 확인된 양수 자원 보상과 15개 여유 슬롯을 위험예산 안에서 PF 1기씩 균등 운용하고, 남는 슬롯은 fresh full-intel 순EV 양수 약탈·수거에 쓴다. 직전 3회 재현된 실질자산 성장 negative 교훈에 따라 expeditioneer 정체성과 원정 슬롯은 유지하되 함대 재투자율을 0.45에서 0.28로 낮췄다. 에너지는 전 행성 흑자라 target 0을 유지하고 Deathstar·달 시설은 관측·큐 불완전과 노출 위험 때문에 보류한다.",
+  "activated_at": "2026-07-31T02:09:13Z",
+  "activation_id": "220793e8242fad2b8467b1e3",
+  "refreshed_at": "2026-07-31T06:04:33Z"
+}

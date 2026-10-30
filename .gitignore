@@ -1,0 +1,31 @@
+.discord_webhook_url
+.battle_notifications_enabled
+scripts/.battle_notifications_cursor*
+scripts/.sizing_regrade_notify_state*
+bots/ai_agents/.experience_scorecard_enabled
+bots/ai_agents/.tech_tree_deployed
+
+# Runtime state, data and logs (kept out of git; v1 originals live in the local archive)
+/.economy_batch_accounts
+/ogamex
+/backups/
+scripts/backups/
+scripts/metrics*.db
+scripts/*.log
+scripts/*.log.*
+scripts/*.err
+scripts/.run_universe.lock
+scripts/.watchdog_heartbeat
+bots/shared/.sessions/
+bots/ai_agents/state/
+bots/ai_agents/state_archive_mac/
+bots/ai_agents/policies/*.tmp
+bots/rule_based/.*_state/
+bots/rule_based/.build_backoff/
+*.sql.gz
+
+# Python / tooling
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.DS_Store

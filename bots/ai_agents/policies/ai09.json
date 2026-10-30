@@ -1,0 +1,134 @@
+{
+  "strategy_version": 3,
+  "updated_at": "2026-07-31T06:05:40Z",
+  "ttl_hours": 2,
+  "personality": "hybrid",
+  "autonomy": "full",
+  "action_plan": [
+    "build",
+    "research",
+    "ship",
+    "expedition",
+    "spy",
+    "harvest",
+    "colonize",
+    "transfers",
+    "development",
+    "production",
+    "moon_development",
+    "phalanx_scans",
+    "jump_gate",
+    "intercepts",
+    "defense",
+    "fleetsave",
+    "develop_colonies",
+    "diplomacy"
+  ],
+  "plans_version": 1,
+  "plans": {
+    "version": 1,
+    "colonize": [],
+    "transfers": [],
+    "development": [],
+    "production": [],
+    "moon_development": [],
+    "phalanx_scans": [],
+    "jump_gate": [],
+    "intercepts": []
+  },
+  "build_priority": [
+    "metal_mine",
+    "crystal_mine",
+    "deuterium_synthesizer",
+    "solar_plant"
+  ],
+  "research_priority": [],
+  "ship_priority": [],
+  "ship_strategy": {
+    "reinvestment_ratio": 0.5,
+    "doctrine": "expeditioneer",
+    "weights": {
+      "203": 55,
+      "219": 30,
+      "209": 10,
+      "204": 5
+    }
+  },
+  "diplomacy": {
+    "version": 1,
+    "messages": []
+  },
+  "aggression": {
+    "min_loot": 20000,
+    "max_active_missions": 1
+  },
+  "targeting": {
+    "allow_strong_targets": false,
+    "allow_defended_targets": false,
+    "excluded_systems": [],
+    "priority_targets": []
+  },
+  "limits": {
+    "scan_span": 2,
+    "spy_global_cooldown_sec": 600,
+    "spy_target_cooldown_sec": 1200,
+    "attack_target_cooldown_sec": 1500,
+    "bashing_max_attacks": 6,
+    "fleet_risk_percent": 25,
+    "min_fleet_value_limit": 0,
+    "max_attack_eta_sec": 0,
+    "max_planets": 99,
+    "reserve_fleet_slots": 0,
+    "harvest_max_concurrent": 0,
+    "harvest_cooldown_sec": 0,
+    "harvest_reserved_raid_slots": 0,
+    "max_active_fleetsaves": 0,
+    "colony_scan_span": 3,
+    "colonize_cooldown_sec": 0,
+    "use_server_expedition_slots": true,
+    "expedition_risk_percent": 30,
+    "expedition_total_exposure_percent": 60
+  },
+  "defense_ratio": 0.3,
+  "defense_strategy": {
+    "mode": "adaptive",
+    "stored_loot_multiplier": 0.8,
+    "production_hours": 8,
+    "rebuild_on_attack": true
+  },
+  "fleetsave": {
+    "mode": "adaptive",
+    "min_value": 0
+  },
+  "energy_target": 0,
+  "secondary_goals": {
+    "deathstar": {
+      "mode": "pause",
+      "reason": "정본 홈 101은 Shipyard 12·Research Lab 12·Hyperspace Drive 15·Hyperspace Technology 15로 서버 선행조건을 충족하지만 Graviton은 0이다. Graviton 가용 에너지는 333으로 요구량 300000보다 299667 부족하며, 후보별 추가 위성도 홈 9667기·고온 행성 247 8565기·저온 행성 255 11523기로 모두 노출된다. 계산 위성 비용은 크리스탈 19334000·듀테륨 4833500이고 Nanite 0, 배타적 건설·조선 큐, risk_rejections의 exposed-satellites-not-authorized 및 nanite-build-time-threshold가 남아 있다. 긴 위성 생산과 큐 독점은 검증된 원정·광산·연구·적응형 생존의 순성장을 희생하므로 부차 목표를 전략적으로 보류한다.",
+      "planet_id": 101,
+      "budget": {
+        "max_satellite_batch": 64,
+        "satellite_horizon_seconds": 21600,
+        "max_deathstar_batch": 1,
+        "deathstar_horizon_seconds": 604800,
+        "target_deathstars": 1,
+        "max_resource_commitment_pct": 35,
+        "reserve_resources": {
+          "metal": 100000,
+          "crystal": 100000,
+          "deuterium": 50000
+        }
+      },
+      "risk": {
+        "allow_exposed_satellites": false,
+        "max_exposed_satellites": 12000,
+        "min_nanite_level": 1,
+        "satellites_without_nanite_limit": 1000
+      }
+    }
+  },
+  "note": "검증된 메탈·크리스탈·듀테륨 균형 성장과 energy_target 0 자동 보정을 유지한다. 탐험가 보너스 원정 슬롯을 먼저 채우고 화물·PF 중심 함대에 유동자원 50%를 재투자한다. raid opportunity none과 승격된 약탈 순손실 때문에 약탈은 제외하며, 최신 정찰은 정보 갱신용으로만 사용하고 적응형 방어·플릿세이브를 유지한다. 달은 partial이라 평가만 하고 Deathstar는 에너지·위성 노출·Nanite·큐 기회비용으로 pause한다.",
+  "activated_at": "2026-07-30T22:43:10Z",
+  "activation_id": "b0e443b7c42c2a3302a63adb",
+  "refreshed_at": "2026-07-31T06:05:40Z"
+}

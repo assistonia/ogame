@@ -1,0 +1,142 @@
+{
+  "strategy_version": 3,
+  "updated_at": "2026-07-31T05:59:40Z",
+  "ttl_hours": 2,
+  "personality": "raider",
+  "autonomy": "full",
+  "action_plan": [
+    "expedition",
+    "spy",
+    "raid",
+    "harvest",
+    "build",
+    "develop_colonies",
+    "research",
+    "ship",
+    "transfers",
+    "colonize",
+    "development",
+    "production",
+    "defense",
+    "fleetsave",
+    "moon_development",
+    "phalanx_scans",
+    "jump_gate",
+    "intercepts",
+    "diplomacy"
+  ],
+  "plans_version": 1,
+  "plans": {
+    "version": 1,
+    "colonize": [],
+    "transfers": [],
+    "development": [],
+    "production": [],
+    "moon_development": [],
+    "phalanx_scans": [],
+    "jump_gate": [],
+    "intercepts": []
+  },
+  "build_priority": [
+    "metal_store",
+    "crystal_store",
+    "deuterium_store",
+    "metal_mine",
+    "crystal_mine",
+    "deuterium_synthesizer",
+    "robot_factory",
+    "shipyard",
+    "research_lab",
+    "nano_factory",
+    "solar_plant"
+  ],
+  "research_priority": [],
+  "ship_priority": [],
+  "ship_strategy": {
+    "reinvestment_ratio": 0.45,
+    "doctrine": "expeditioneer",
+    "weights": {
+      "203": 40,
+      "219": 30,
+      "209": 15,
+      "206": 10,
+      "204": 5
+    }
+  },
+  "diplomacy": {
+    "version": 1,
+    "messages": []
+  },
+  "aggression": {
+    "min_loot": 50000,
+    "max_active_missions": 2
+  },
+  "targeting": {
+    "allow_strong_targets": true,
+    "allow_defended_targets": true,
+    "excluded_systems": [],
+    "priority_targets": []
+  },
+  "limits": {
+    "scan_span": 20,
+    "spy_global_cooldown_sec": 600,
+    "spy_target_cooldown_sec": 1200,
+    "attack_target_cooldown_sec": 1500,
+    "bashing_max_attacks": 6,
+    "fleet_risk_percent": 100,
+    "min_fleet_value_limit": 0,
+    "max_attack_eta_sec": 0,
+    "max_planets": 99,
+    "reserve_fleet_slots": 0,
+    "harvest_max_concurrent": 0,
+    "harvest_cooldown_sec": 0,
+    "harvest_reserved_raid_slots": 0,
+    "max_active_fleetsaves": 0,
+    "colony_scan_span": 3,
+    "colonize_cooldown_sec": 0,
+    "use_server_expedition_slots": true,
+    "expedition_risk_percent": 100,
+    "expedition_total_exposure_percent": 100
+  },
+  "defense_ratio": 0.25,
+  "defense_strategy": {
+    "mode": "adaptive",
+    "stored_loot_multiplier": 0.8,
+    "production_hours": 8,
+    "rebuild_on_attack": true
+  },
+  "fleetsave": {
+    "mode": "adaptive",
+    "min_value": 0
+  },
+  "energy_target": 0,
+  "secondary_goals": {
+    "deathstar": {
+      "mode": "pause",
+      "reason": "Deathstar 선행조건은 Shipyard 12/12, Hyperspace Drive 13/7, Hyperspace Technology 14/6, Research Lab 12/12로 충족했지만 Graviton은 0/1이고 사용가능 에너지는 62747/300000으로 gap 237253이다. 최고 위성 효율 후보 1:3:5(100도)도 7484기, 홈 1:2:5(72도)도 6779기가 추가로 필요하다. 홈은 Nanite 0이며 연구 큐가 busy이고 조선소 unit queue도 busy다. 추가 위성 추정 비용은 크리스탈 13558000과 듀테륨 3389500이고 exposed-satellites-not-authorized 및 nanite-build-time-threshold 거절이 지속된다. 위성 대량 노출과 조선소 독점의 기회비용이 원정 적재·식민지 생산·전투력의 지속 순성장보다 크므로 부차 목표를 보류한다.",
+      "planet_id": null,
+      "budget": {
+        "max_satellite_batch": 64,
+        "satellite_horizon_seconds": 21600,
+        "max_deathstar_batch": 1,
+        "deathstar_horizon_seconds": 604800,
+        "target_deathstars": 1,
+        "max_resource_commitment_pct": 35,
+        "reserve_resources": {
+          "metal": 100000,
+          "crystal": 100000,
+          "deuterium": 50000
+        }
+      },
+      "risk": {
+        "allow_exposed_satellites": false,
+        "max_exposed_satellites": 12000,
+        "min_nanite_level": 1,
+        "satellites_without_nanite_limit": 1000
+      }
+    }
+  },
+  "note": "원정 슬롯을 먼저 모두 수익화하고, 최신 정찰이 없는 현재는 남는 슬롯으로 spy를 갱신한 뒤 양수 순EV의 raid·harvest만 실행한다. expeditioneer 화물 비중과 재투자율 0.45는 유지하되 전투·수거 함대도 보강하고, 전 식민지의 음수 에너지·생산 정체는 엔진의 균형 최소선에 맡긴다. 직전 구간은 실질자산 0.50x 및 약탈 0으로 표본이 부족하므로 personality는 유지하고, 과잉 방어·공격 고정 대신 fresh intel과 원정 적재량을 조정한다. Deathstar는 에너지 gap·노출 위성·Nanite 0·큐 기회비용이 해소될 때까지 pause한다.",
+  "activated_at": "2026-07-31T05:59:40Z",
+  "activation_id": "d0dc1861640a5be9cb788af2"
+}

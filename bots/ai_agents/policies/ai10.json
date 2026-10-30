@@ -1,0 +1,141 @@
+{
+  "strategy_version": 3,
+  "updated_at": "2026-07-31T06:06:18Z",
+  "ttl_hours": 2,
+  "personality": "raider",
+  "autonomy": "full",
+  "action_plan": [
+    "expedition",
+    "harvest",
+    "spy",
+    "build",
+    "ship",
+    "develop_colonies",
+    "development",
+    "production",
+    "research",
+    "raid",
+    "colonize",
+    "transfers",
+    "defense",
+    "fleetsave",
+    "moon_development",
+    "phalanx_scans",
+    "jump_gate",
+    "intercepts",
+    "diplomacy"
+  ],
+  "plans_version": 1,
+  "plans": {
+    "version": 1,
+    "colonize": [],
+    "transfers": [],
+    "development": [],
+    "production": [],
+    "moon_development": [],
+    "phalanx_scans": [],
+    "jump_gate": [],
+    "intercepts": []
+  },
+  "build_priority": [
+    "deuterium_store",
+    "robot_factory",
+    "research_lab",
+    "shipyard",
+    "crystal_store",
+    "metal_store",
+    "deuterium_synthesizer",
+    "crystal_mine",
+    "metal_mine",
+    "solar_plant"
+  ],
+  "research_priority": [],
+  "ship_priority": [],
+  "ship_strategy": {
+    "reinvestment_ratio": 0.45,
+    "doctrine": "expeditioneer",
+    "weights": {
+      "203": 38,
+      "219": 40,
+      "209": 17,
+      "206": 3,
+      "215": 2
+    }
+  },
+  "diplomacy": {
+    "version": 1,
+    "messages": []
+  },
+  "aggression": {
+    "min_loot": 150000,
+    "max_active_missions": 1
+  },
+  "targeting": {
+    "allow_strong_targets": false,
+    "allow_defended_targets": false,
+    "excluded_systems": [],
+    "priority_targets": []
+  },
+  "limits": {
+    "scan_span": 20,
+    "spy_global_cooldown_sec": 600,
+    "spy_target_cooldown_sec": 1200,
+    "attack_target_cooldown_sec": 1500,
+    "bashing_max_attacks": 4,
+    "fleet_risk_percent": 100,
+    "min_fleet_value_limit": 0,
+    "max_attack_eta_sec": 0,
+    "max_planets": 99,
+    "reserve_fleet_slots": 0,
+    "harvest_max_concurrent": 0,
+    "harvest_cooldown_sec": 0,
+    "harvest_reserved_raid_slots": 0,
+    "max_active_fleetsaves": 0,
+    "colony_scan_span": 3,
+    "colonize_cooldown_sec": 0,
+    "use_server_expedition_slots": true,
+    "expedition_risk_percent": 80,
+    "expedition_total_exposure_percent": 80
+  },
+  "defense_ratio": 0.3,
+  "defense_strategy": {
+    "mode": "adaptive",
+    "stored_loot_multiplier": 0.8,
+    "production_hours": 8,
+    "rebuild_on_attack": true
+  },
+  "fleetsave": {
+    "mode": "adaptive",
+    "min_value": 0
+  },
+  "energy_target": 0,
+  "secondary_goals": {
+    "deathstar": {
+      "mode": "pause",
+      "reason": "이번 틱에도 Deathstar는 지속 순성장·생존·원정 수익보다 후순위다. 후보 227이 가장 따뜻해 위성 효율은 38이지만 Shipyard 10/12, Graviton 연구소 10/12, Graviton 0/1이며 사용가능 에너지는 269/300000으로 정확한 에너지 격차가 299731이고 약 7888기의 추가 위성이 필요하다. 위성은 노출 자산이고 Nanite 0이며 227의 조선 큐에는 gauss cannon 2기가 점유되어 있다. 홈 102도 건설·조선 큐가 점유 중이고 다른 ready 행성들도 에너지 격차가 약 299368~299776, Nanite 0이라 대체 후보 역시 안전한 Graviton 경로가 아니다. 연구 큐는 비어 있지만 이 부차 목표를 위해 위성·시설·연구·조선 큐와 수천만 단위 크리스탈/듀테륨을 묶는 기회비용이 크다. persisted_state는 비어 있고 risk_rejections는 []이지만 이는 안전성이나 병목 해소의 증거가 아니다. 선행 시설, Nanite, 에너지 조달, 위성 노출 한도와 큐 여유가 함께 충족될 때까지 집행하지 않는다.",
+      "planet_id": 227,
+      "budget": {
+        "max_satellite_batch": 64,
+        "satellite_horizon_seconds": 21600,
+        "max_deathstar_batch": 1,
+        "deathstar_horizon_seconds": 604800,
+        "target_deathstars": 1,
+        "max_resource_commitment_pct": 35,
+        "reserve_resources": {
+          "metal": 100000,
+          "crystal": 100000,
+          "deuterium": 50000
+        }
+      },
+      "risk": {
+        "allow_exposed_satellites": false,
+        "max_exposed_satellites": 12000,
+        "min_nanite_level": 1,
+        "satellites_without_nanite_limit": 1000
+      }
+    }
+  },
+  "note": "잡음은 지난 틱과 다른 변주를 허용하되 제국을 굶기지 않는다. Discoverer 원정 슬롯을 PF 1기씩 먼저 수익화하고 수거를 병행하며, fresh full-intel 양수 순EV가 없으므로 약탈은 최신 정보가 확인될 때만 최대 1개를 허용한다. 3회 이상 재현된 경제 build_priority와 expeditioneer 45% 재투자는 유지하고, unavailable 관측과 빈 약탈 표본을 성공 근거로 해석하지 않는다. 달은 실제 존재하지만 핵심 필드·시설·큐 관측이 unavailable이므로 moon_development/phalanx/gate/intercept 명령은 비워 매 틱 재평가한다.",
+  "activated_at": "2026-07-31T06:06:18Z",
+  "activation_id": "35c76f0e4e499d084c117063"
+}

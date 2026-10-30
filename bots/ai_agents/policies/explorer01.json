@@ -1,0 +1,141 @@
+{
+  "strategy_version": 3,
+  "updated_at": "2026-07-31T06:06:46Z",
+  "ttl_hours": 2,
+  "personality": "explorer",
+  "autonomy": "full",
+  "action_plan": [
+    "expedition",
+    "spy",
+    "raid",
+    "harvest",
+    "build",
+    "research",
+    "ship",
+    "transfers",
+    "development",
+    "production",
+    "colonize",
+    "moon_development",
+    "phalanx_scans",
+    "jump_gate",
+    "intercepts",
+    "defense",
+    "fleetsave",
+    "develop_colonies",
+    "diplomacy"
+  ],
+  "plans_version": 1,
+  "plans": {
+    "version": 1,
+    "colonize": [],
+    "transfers": [],
+    "development": [],
+    "production": [],
+    "moon_development": [],
+    "phalanx_scans": [],
+    "jump_gate": [],
+    "intercepts": []
+  },
+  "build_priority": [
+    "metal_mine",
+    "crystal_mine",
+    "deuterium_synthesizer",
+    "robot_factory",
+    "shipyard",
+    "research_lab",
+    "solar_plant",
+    "metal_store",
+    "crystal_store",
+    "deuterium_store"
+  ],
+  "research_priority": [],
+  "ship_priority": [],
+  "ship_strategy": {
+    "reinvestment_ratio": 0.84,
+    "doctrine": "expeditioneer",
+    "weights": {
+      "203": 88,
+      "206": 8,
+      "209": 2,
+      "212": 2
+    }
+  },
+  "diplomacy": {
+    "version": 1,
+    "messages": []
+  },
+  "aggression": {
+    "min_loot": 5000,
+    "max_active_missions": 3
+  },
+  "targeting": {
+    "allow_strong_targets": true,
+    "allow_defended_targets": true,
+    "excluded_systems": [],
+    "priority_targets": []
+  },
+  "limits": {
+    "scan_span": 8,
+    "spy_global_cooldown_sec": 600,
+    "spy_target_cooldown_sec": 1200,
+    "attack_target_cooldown_sec": 1500,
+    "bashing_max_attacks": 3,
+    "fleet_risk_percent": 100,
+    "min_fleet_value_limit": 0,
+    "max_attack_eta_sec": 0,
+    "max_planets": 99,
+    "reserve_fleet_slots": 0,
+    "harvest_max_concurrent": 0,
+    "harvest_cooldown_sec": 0,
+    "harvest_reserved_raid_slots": 0,
+    "max_active_fleetsaves": 0,
+    "colony_scan_span": 3,
+    "colonize_cooldown_sec": 0,
+    "use_server_expedition_slots": true,
+    "expedition_risk_percent": 100,
+    "expedition_total_exposure_percent": 100
+  },
+  "defense_ratio": 0.25,
+  "defense_strategy": {
+    "mode": "adaptive",
+    "stored_loot_multiplier": 0.75,
+    "production_hours": 8,
+    "rebuild_on_attack": true
+  },
+  "fleetsave": {
+    "mode": "adaptive",
+    "min_value": 0
+  },
+  "energy_target": 0,
+  "secondary_goals": {
+    "deathstar": {
+      "mode": "pause",
+      "reason": "홈월드(242)와 식민지(400) 모두 shipyard/lab/Graviton 선행 미달(shipyard: -3,-8, graviton: -1, lab: -3)이며 대기 단일 건물/연구 큐가 긴 독점 상태라 대체 성장(탐색·방어·건물 투자) 기회비용이 과도하고, homeworld 에너지 -1125로 Graviton 필요 여유 301125 부족·노출 위성 11k+로 리스크가 큼. 현재 조건에서 취득순 성장 우선권 없음",
+      "planet_id": null,
+      "budget": {
+        "max_satellite_batch": 64,
+        "satellite_horizon_seconds": 21600,
+        "max_deathstar_batch": 1,
+        "deathstar_horizon_seconds": 604800,
+        "target_deathstars": 1,
+        "max_resource_commitment_pct": 35,
+        "reserve_resources": {
+          "metal": 100000,
+          "crystal": 100000,
+          "deuterium": 50000
+        }
+      },
+      "risk": {
+        "allow_exposed_satellites": false,
+        "max_exposed_satellites": 12000,
+        "min_nanite_level": 1,
+        "satellites_without_nanite_limit": 1000
+      }
+    }
+  },
+  "note": "탐험 슬롯 최우선 운용을 유지하되, 원정 잉여 함량은 소형전투 최소치로 제한하고 대형화물·수송 가용분은 추가 확대로 조정하며, 데스스타는 에너지·연구/건조 큐 독점·노출 리스크로 pause 유지",
+  "activated_at": "2026-07-31T04:33:41Z",
+  "activation_id": "33e440e1ba5539bcbc802e26",
+  "refreshed_at": "2026-07-31T06:06:46Z"
+}

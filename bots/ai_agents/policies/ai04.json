@@ -1,0 +1,141 @@
+{
+  "strategy_version": 3,
+  "updated_at": "2026-07-31T06:01:27Z",
+  "ttl_hours": 2,
+  "personality": "explorer",
+  "autonomy": "full",
+  "action_plan": [
+    "build",
+    "research",
+    "ship",
+    "expedition",
+    "spy",
+    "raid",
+    "harvest",
+    "colonize",
+    "transfers",
+    "development",
+    "production",
+    "moon_development",
+    "phalanx_scans",
+    "jump_gate",
+    "intercepts",
+    "defense",
+    "fleetsave",
+    "develop_colonies",
+    "diplomacy"
+  ],
+  "plans_version": 1,
+  "plans": {
+    "version": 1,
+    "colonize": [],
+    "transfers": [],
+    "development": [],
+    "production": [],
+    "moon_development": [],
+    "phalanx_scans": [],
+    "jump_gate": [],
+    "intercepts": []
+  },
+  "build_priority": [
+    "research_lab",
+    "robot_factory",
+    "shipyard",
+    "deuterium_synthesizer",
+    "crystal_mine",
+    "deuterium_store",
+    "crystal_store",
+    "metal_store",
+    "metal_mine",
+    "solar_plant"
+  ],
+  "research_priority": [],
+  "ship_priority": [],
+  "ship_strategy": {
+    "reinvestment_ratio": 0.4,
+    "doctrine": "expeditioneer",
+    "weights": {
+      "203": 40,
+      "206": 20,
+      "209": 10,
+      "219": 30
+    }
+  },
+  "diplomacy": {
+    "version": 1,
+    "messages": []
+  },
+  "aggression": {
+    "min_loot": 30000,
+    "max_active_missions": 3
+  },
+  "targeting": {
+    "allow_strong_targets": true,
+    "allow_defended_targets": true,
+    "excluded_systems": [],
+    "priority_targets": []
+  },
+  "limits": {
+    "scan_span": 2,
+    "spy_global_cooldown_sec": 600,
+    "spy_target_cooldown_sec": 1200,
+    "attack_target_cooldown_sec": 1500,
+    "bashing_max_attacks": 6,
+    "fleet_risk_percent": 70,
+    "min_fleet_value_limit": 0,
+    "max_attack_eta_sec": 0,
+    "max_planets": 99,
+    "reserve_fleet_slots": 0,
+    "harvest_max_concurrent": 0,
+    "harvest_cooldown_sec": 0,
+    "harvest_reserved_raid_slots": 0,
+    "max_active_fleetsaves": 0,
+    "colony_scan_span": 3,
+    "colonize_cooldown_sec": 0,
+    "use_server_expedition_slots": true,
+    "expedition_risk_percent": 55,
+    "expedition_total_exposure_percent": 65
+  },
+  "defense_ratio": 0.25,
+  "defense_strategy": {
+    "mode": "adaptive",
+    "stored_loot_multiplier": 0.8,
+    "production_hours": 8,
+    "rebuild_on_attack": true
+  },
+  "fleetsave": {
+    "mode": "adaptive",
+    "min_value": 0
+  },
+  "energy_target": 0,
+  "secondary_goals": {
+    "deathstar": {
+      "mode": "pause",
+      "reason": "Deathstar는 부차 목표다. Shipyard 10/12(gap 2), Graviton용 Research Lab 10/12(gap 2), Graviton 0/1이며 가용 에너지 최선 후보 254(1:11:7)도 438/300000으로 299562 부족하다. 후보별 추가 위성은 8322~10698기이고 254가 77도·위성당 36으로 최선이지만 약 crystal 16644000/deuterium 4161000, 위성 노출, Nanite 0, 건설·조선소 큐 독점의 기회비용이 있다. risk_rejections는 없지만 안전 승인 근거가 아니며, 최근 원정은 자원·함선 획득과 실패가 혼재했고 현재 약탈 기회도 none이므로 원정 재투자·균형 성장·생존을 굶기지 않도록 시설·Nanite·에너지·큐 조건이 개선될 때까지 보류한다.",
+      "planet_id": null,
+      "budget": {
+        "max_satellite_batch": 64,
+        "satellite_horizon_seconds": 21600,
+        "max_deathstar_batch": 1,
+        "deathstar_horizon_seconds": 604800,
+        "target_deathstars": 1,
+        "max_resource_commitment_pct": 35,
+        "reserve_resources": {
+          "metal": 100000,
+          "crystal": 100000,
+          "deuterium": 50000
+        }
+      },
+      "risk": {
+        "allow_exposed_satellites": false,
+        "max_exposed_satellites": 12000,
+        "min_nanite_level": 1,
+        "satellites_without_nanite_limit": 1000
+      }
+    }
+  },
+  "note": "탐험가/full 유지: 양수 순EV 원정 슬롯을 PF 1기와 최소 호위로 먼저 균등 충원하고 대형화물선에 재투자한다. 최근 원정은 자원·함선 획득과 실패가 혼재해 위험 상한 55%/65%를 유지하며, fresh full-intel과 양수 순EV가 없는 약탈·수거는 강행하지 않는다. 4개 행성은 에너지 흑자·생산 100%라 energy_target 0을 유지하고, 적응형 방어·fleetsave로 생존성을 보완한다. 직전 정책의 explorer/full·원정 우선·Deathstar pause는 유지하고, 원정 함대가 이미 충분히 커진 상태와 성장 기회비용을 반영해 함선 재투자율만 0.45에서 0.40으로 낮춘다.",
+  "activated_at": "2026-07-31T04:27:06Z",
+  "activation_id": "58de1e5aa34d69fcca09d974",
+  "refreshed_at": "2026-07-31T06:01:27Z"
+}
