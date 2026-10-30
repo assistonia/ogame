@@ -26,7 +26,15 @@ case "$cmd" in
   setup) setup ;;
   up)
     setup
-    "${COMPOSE[@]}" up -d --pull missing
+    # On a fresh DB volume the app can start before MariaDB accepts connections;
+    # its entrypoint then restarts once. Wait for it to turn healthy and retry.
+    if ! "${COMPOSE[@]}" up -d --pull missing; then
+      for _ in $(seq 1 60); do
+        [ "$(docker inspect -f '{{.State.Health.Status}}' "$("${COMPOSE[@]}" ps -q ogamex-app)" 2>/dev/null)" = healthy ] && break
+        sleep 5
+      done
+      "${COMPOSE[@]}" up -d --pull missing
+    fi
     echo "waiting for app..."
     for _ in $(seq 1 120); do
       "${COMPOSE[@]}" exec -T ogamex-app php artisan ogamex:sim:clock >/dev/null 2>&1 && break
