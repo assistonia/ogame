@@ -282,7 +282,7 @@ class Run:
                 self.refresh_llm(turn, conn, scores)
 
             order = list(self.accounts)
-            random.Random(turn).shuffle(order)
+            random.Random(f"{self.cfg.get('seed', 0)}-{turn}").shuffle(order)
             errors = 0
             with cf.ThreadPoolExecutor(max_workers=parallel) as ex:
                 futures = {ex.submit(self.play, a, turn): a for a in order}
