@@ -151,9 +151,25 @@ class Run:
         return round(turns * self.cfg["universe"]["turn_seconds"] / 3600 * 2 + 24, 1)
 
     def resume(self) -> int:
-        state = json.loads(self.state_path.read_text())
-        self.accounts = state["accounts"]
         server.up()
+        server.ensure_readonly_db_user()
+        state = json.loads(self.state_path.read_text())
+        emails = {p["email"] for p in server.scores().get("players", [])}
+        if state["accounts"] and state["accounts"][0]["email"] not in emails:
+            # New machine / wiped DB: roll back to the last checkpoint.
+            ckpt = self.dir / "checkpoint.sql.gz"
+            if not ckpt.exists():
+                raise SystemExit("universe is empty and no checkpoint exists; use --fresh")
+            self.log("server DB is empty: restoring last checkpoint")
+            server.restore(ckpt)
+            shutil.copy(self.dir / "checkpoint_state.json", self.state_path)
+            bots_tar = self.dir / "checkpoint_bots.tar.gz"
+            if bots_tar.exists():
+                for rel in BOT_STATE_DIRS:
+                    shutil.rmtree(ROOT / rel, ignore_errors=True)
+                shutil.unpack_archive(bots_tar, ROOT)
+            state = json.loads(self.state_path.read_text())
+        self.accounts = state["accounts"]
         return int(state["next_turn"])
 
     # ---------- one account turn ----------
@@ -291,13 +307,19 @@ class Run:
             self.save_state(turn + 1)
             if (turn + 1) % ckpt_every == 0:
                 self.checkpoint(turn + 1)
-        self.checkpoint(total)
+        if total % ckpt_every != 0:
+            self.checkpoint(total)
         self.log("run finished")
 
     def checkpoint(self, turn: int) -> None:
         path = self.dir / "checkpoint.sql.gz"
         server.dump(path)
         shutil.copy(self.state_path, self.dir / "checkpoint_state.json")
+        import tarfile
+        with tarfile.open(self.dir / "checkpoint_bots.tar.gz", "w:gz") as tar:
+            for rel in BOT_STATE_DIRS:
+                if (ROOT / rel).exists():
+                    tar.add(ROOT / rel, arcname=rel)
         self.log(f"checkpoint at turn {turn} -> {path}")
 
 
