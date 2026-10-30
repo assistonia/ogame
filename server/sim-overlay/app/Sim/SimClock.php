@@ -55,6 +55,22 @@ class SimClock
         Carbon::setTestNow($now);
         CarbonImmutable::setTestNow($now->toImmutable());
         Date::setTestNow($now);
+        self::syncDatabase($timestamp);
+    }
+
+    /** Make NOW()/UNIX_TIMESTAMP() inside MariaDB follow the virtual clock too. */
+    public static function syncDatabase(int $timestamp): void
+    {
+        if (!function_exists('app') || !app()->bound('db')) {
+            return;
+        }
+        foreach (app('db')->getConnections() as $connection) {
+            try {
+                $connection->statement('SET timestamp = ' . (int) $timestamp);
+            } catch (\Throwable) {
+                // Connection not usable yet; ConnectionEstablished listener covers new ones.
+            }
+        }
     }
 
     /** Freeze "now" at the stored clock value if the clock is enabled and set. */

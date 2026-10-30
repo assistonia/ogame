@@ -19,6 +19,14 @@ def set_now(ts: float | None) -> None:
     _sim_now = None if ts is None else float(ts)
 
 
+def pinned() -> float | None:
+    """The pinned game time, or None when following the wall clock."""
+    if _sim_now is not None:
+        return _sim_now
+    env = os.environ.get("OGAME_SIM_NOW")
+    return float(env) if env else None
+
+
 def now() -> float:
     if _sim_now is not None:
         return _sim_now

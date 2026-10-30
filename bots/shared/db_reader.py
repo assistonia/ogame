@@ -74,12 +74,31 @@ def _conn() -> "pymysql.connections.Connection":
     conn = getattr(_local, "conn", None)
     if conn is None:
         conn = _local.conn = _connect()
-        return conn
-    try:
-        conn.ping(reconnect=False)
-    except Exception:  # noqa: BLE001 - 끊긴 커넥션이면 재연결(실패 시 예외 → 호출부 HTTP 폴백)
-        conn = _local.conn = _connect()
+    else:
+        try:
+            conn.ping(reconnect=False)
+        except Exception:  # noqa: BLE001 - 끊긴 커넥션이면 재연결(실패 시 예외 → 호출부 HTTP 폴백)
+            conn = _local.conn = _connect()
+    _sync_db_clock(conn)
     return conn
+
+
+def _sync_db_clock(conn) -> None:
+    """Make NOW()/UNIX_TIMESTAMP() in this session follow the game clock.
+
+    SQL that ages reports or windows events with NOW() must agree with the
+    virtual clock of the turn-based simulator. Outside the simulator the
+    session clock is reset to the server's real time (SET timestamp = DEFAULT).
+    """
+    pinned = simclock.pinned()
+    if getattr(conn, "_sim_ts", "unset") == pinned:
+        return
+    with conn.cursor() as cur:
+        if pinned is None:
+            cur.execute("SET timestamp = DEFAULT")
+        else:
+            cur.execute("SET timestamp = %s", (int(pinned),))
+    conn._sim_ts = pinned
 
 
 # --- 지연 정산이 필요한 함대 감지 -----------------------------------------
