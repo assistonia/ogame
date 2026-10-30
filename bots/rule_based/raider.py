@@ -53,6 +53,7 @@ from bots.shared.game_objects import (
     SMALL_CARGO,        # 202
     ESPIONAGE_PROBE,    # 210
 )
+from bots.shared import simclock  # noqa: E402
 
 HEAVY_FIGHTER = 205
 LARGE_CARGO = 203
@@ -237,7 +238,7 @@ BATTLE_SIM_CANARY_EMAILS = frozenset({"ai06@bots.local"})
 # 수십 번 털려 영구 농장이 되고, 생태계가 레이더 독주로 조기 수렴한다. 그래서 실서버처럼
 # 같은 좌표에 대한 공격을 24시간 롤링 윈도우 기준으로 상한을 둔다.
 # (OGameX 서버는 bashingSystemLimitReached 를 항상 false 로 두어 배싱을 강제하지 않으므로
-#  봇이 클라이언트에서 자율 제한한다.) 타임스탬프는 기존 쿨다운과 같은 실시간(time.time()) 기준.
+#  봇이 클라이언트에서 자율 제한한다.) 타임스탬프는 기존 쿨다운과 같은 실시간(simclock.now()) 기준.
 BASH_WINDOW_SEC = 86400   # 24시간 롤링 윈도우
 BASH_MAX_ATTACKS = 6
 HARD_MAX_BASH_ATTACKS = BASH_MAX_ATTACKS
@@ -892,7 +893,7 @@ def read_spy_reports(
             created_at_ts = float(row["created_at_ts"])
         except (KeyError, TypeError, ValueError):
             # 구 테스트/여분 DB 드라이버에서 필드가 없어도 age로 복원한다.
-            created_at_ts = time.time() - age_sec if age_sec is not None else None
+            created_at_ts = simclock.now() - age_sec if age_sec is not None else None
         fresh = age_sec is not None and 0 <= age_sec <= max(0, int(max_age_sec))
         reports[coord] = {
             "report_id": row.get("report_id"),
@@ -1126,7 +1127,7 @@ def cached_scan_galaxy(
     - 없거나 오래됐거나 손상됐으면 실제 scan_galaxy 를 호출(http++/miss++)하고 저장한다.
     scan_galaxy 실패(예외)는 그대로 전파한다 — 호출부(scan_targets)가 시스템 단위로 흡수한다.
     """
-    now = time.time() if now is None else now
+    now = simclock.now() if now is None else now
     path = _scan_cache_path(galaxy, system)
     try:
         if now - path.stat().st_mtime < SCAN_CACHE_TTL_SEC:
@@ -1207,7 +1208,7 @@ def _prioritize_targets(
     choosing its first row. Recent spy/attack counts dominate the hash, so this is
     target rotation rather than random wandering.
     """
-    current = time.time() if now is None else float(now)
+    current = simclock.now() if now is None else float(now)
 
     def _recent_count(values: list[float]) -> int:
         return sum(1 for value in values if current - value < BASH_WINDOW_SEC)
@@ -1361,7 +1362,7 @@ def incoming_attack_to_coord(
         mission_id = int(row["mission_id"])
     except (KeyError, TypeError, ValueError):
         return None
-    current = time.time() if now is None else float(now)
+    current = simclock.now() if now is None else float(now)
     return {
         "mission_id": mission_id,
         "coord": target,
@@ -2902,7 +2903,7 @@ def _raid_tick_inner(
         return None
 
     active, attacking, harvesting = _active_fleet_info(client)
-    now = time.time()
+    now = simclock.now()
     state = _load_state(email)
     _sync_spy_loss_messages(email, state, now)
 

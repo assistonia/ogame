@@ -56,6 +56,7 @@ from bots.shared.game_objects import (
     RESEARCH_LAB,          # 31
     SHIPYARD,              # 21
 )
+from bots.shared import simclock  # noqa: E402
 
 IMPULSE_DRIVE = 117
 ESPIONAGE_TECHNOLOGY = 106
@@ -662,7 +663,7 @@ def prepare_colonization(
         cooldown = max(0, int(cooldown_sec))
     except (TypeError, ValueError, OverflowError):
         return _structured_outcome(plan, "rejected", "invalid_cooldown")
-    if time.time() - last_attempt < cooldown:
+    if simclock.now() - last_attempt < cooldown:
         return _structured_outcome(plan, "waiting", "target_cooldown")
     return _structured_outcome(
         plan,
@@ -714,7 +715,7 @@ def execute_colonization_plan(
 
     key = f"{exact['galaxy']}:{exact['system']}:{exact['position']}"
     state = _load_state(email)
-    state[key] = time.time()
+    state[key] = simclock.now()
     _save_state(email, state)
     return _structured_outcome(
         plan,
@@ -833,7 +834,7 @@ def _colony_tick_inner(
         return "colony idle (자기 시스템 조회 실패)"
     galaxy, system = own
 
-    now = time.time()
+    now = simclock.now()
     state = _load_state(email)
     _ = scan_span  # 이전 근거리 스캔 설정은 API 호환성만 유지한다.
     configured_cooldown = max(0, int(cooldown_sec))

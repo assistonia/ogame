@@ -36,6 +36,7 @@ import time
 from typing import Any, NamedTuple
 
 from bots.shared import db_reader
+from bots.shared import simclock  # noqa: E402
 
 
 STATE_DIR = pathlib.Path(__file__).resolve().parent / ".turtle_reflex_state"
@@ -103,7 +104,7 @@ def assess_turtle_threat(
     current_value : 현재 방어 유닛의 총 건조 가치(호출부 turtle._defense_value 가 계산).
                     방어 수량 조회 실패로 신뢰할 수 없으면 None → 전투보고 폴백.
     """
-    now = time.time() if now is None else float(now)
+    now = simclock.now() if now is None else float(now)
     if current_value is not None:
         try:
             return _assess_from_peak(email, int(current_value), now)

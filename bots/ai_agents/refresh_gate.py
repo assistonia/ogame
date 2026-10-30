@@ -9,6 +9,7 @@ import json
 import math
 import pathlib
 from typing import Any, Mapping
+from bots.shared import simclock  # noqa: E402
 
 
 SCHEMA_VERSION = 1
@@ -30,7 +31,7 @@ _QUANTITY_PARENTS = {
 
 
 def _utc_now() -> dt.datetime:
-    return dt.datetime.now(dt.timezone.utc)
+    return simclock.utcnow()
 
 
 def _iso(value: dt.datetime) -> str:

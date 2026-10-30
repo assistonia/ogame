@@ -22,6 +22,7 @@ from bots.shared.game_objects import (
     SHIPS,
     name_of,
 )
+from bots.shared import simclock  # noqa: E402
 
 
 RESOURCE_KEYS = ("metal", "crystal", "deuterium")
@@ -484,7 +485,7 @@ def build_normalized_empire_state(email: str) -> dict[str, Any]:
     ``account`` section for research, missions, fleet slots, and ship totals.
     All reads are SELECT-only and no account name is assumed.
     """
-    observed_at = int(time.time())
+    observed_at = int(simclock.now())
     try:
         source_planets = db_reader.list_planets_db(email)
     except Exception as exc:  # noqa: BLE001

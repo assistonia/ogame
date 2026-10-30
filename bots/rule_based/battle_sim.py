@@ -50,6 +50,7 @@ import os
 import pathlib
 import random
 import time
+from bots.shared import simclock  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # 유닛 스탯 (structure, shield, attack) — ogamex GameObjects 실측
@@ -633,13 +634,13 @@ def record_outcome(state_key: str, predicted_loss: float, actual_loss: float) ->
     data["streak"] = (data.get("streak", 0) + 1) if overrun else 0
     data.setdefault("recent", []).append({
         "pred": float(predicted_loss), "actual": float(actual_loss),
-        "overrun": overrun, "ts": time.time(),
+        "overrun": overrun, "ts": simclock.now(),
     })
     data["recent"] = data["recent"][-RECENT_CAP:]
     just_tripped = False
     if not data.get("tripped", False) and data["streak"] >= TRIP_STREAK:
         data["tripped"] = True
-        data["tripped_at"] = time.time()
+        data["tripped_at"] = simclock.now()
         just_tripped = True
     _safety_save(state_key, data)
     return {"tripped": data["tripped"], "just_tripped": just_tripped,

@@ -42,6 +42,7 @@ from bots.rule_based.personality import (  # noqa: E402
     planning_personality,
     tech_label,
 )
+from bots.shared import simclock  # noqa: E402
 
 
 # 서버 큐 상한(실측·ogamex/app/ViewModels/Queue/Abstracts/QueueListViewModel.php):
@@ -116,7 +117,7 @@ def default_tick_index() -> int:
 
     같은 봇이라도 틱마다 성격 사이클을 한 칸씩 돌게 하기 위함이다.
     """
-    return int(time.time() // 60)
+    return int(simclock.now() // 60)
 
 
 def _collect_levels(client: OGameClient) -> dict[int, int]:

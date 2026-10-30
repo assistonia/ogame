@@ -14,6 +14,7 @@ from typing import Any
 
 from bots.ai_agents import action_feedback
 from bots.shared.game_objects import BUILDINGS, DEFENSES, FACILITIES, RESEARCH, SHIPS
+from bots.shared import simclock  # noqa: E402
 
 
 DEFAULT_STATE_ROOT = Path(__file__).resolve().parent / "state"
@@ -287,7 +288,7 @@ def reconcile_queued_actions(
     now: int | None = None,
 ) -> dict[str, Any]:
     """Append terminal transitions supported by a fresh normalized snapshot."""
-    current_time = int(time.time()) if now is None else int(now)
+    current_time = int(simclock.now()) if now is None else int(now)
     root = _root(empire_state)
     observed_at = _positive_int(root.get("observed_at"))
     if (

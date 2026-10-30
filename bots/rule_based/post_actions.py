@@ -38,6 +38,7 @@ from bots.rule_based.personality import FLEETSAVE_MIN_VALUE, experimental_profil
 from bots.shared import db_reader, moons
 from bots.ai_agents.action_catalog import effective_action_plan
 from bots.ai_agents import action_feedback, deathstar_goal
+from bots.shared import simclock  # noqa: E402
 
 
 # 단일행성 raider는 안전한 자기 식민지 Transport 플릿세이브가 불가능하다. 두 번째 행성만
@@ -1078,7 +1079,7 @@ def _run_structured_phalanx_scan(
                     source_moon=source,
                     target=target,
                     response=response,
-                    scan_time=time.time(),
+                    scan_time=simclock.now(),
                     ttl_seconds=min(900, ttl),
                 )
                 result = {
@@ -1420,7 +1421,7 @@ def _run_structured_jump_gates(
 ) -> tuple[dict[str, str], list[str]]:
     dependency_status: dict[str, str] = {}
     notes: list[str] = []
-    now = time.time()
+    now = simclock.now()
     for plan in plans:
         command_id = plan.get("command_id")
         dependency = _jump_dependency(plan, intercept_ids)
@@ -1548,7 +1549,7 @@ def _run_due_intercepts(
     available = dict(levels)
     remaining = reserved_slots
     notes: list[str] = []
-    now = time.time()
+    now = simclock.now()
     for entry, plan in prepared:
         dependency_state = jump_dependencies.get(plan.command_id)
         if dependency_state is not None and dependency_state != "sent":

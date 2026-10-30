@@ -32,6 +32,7 @@ from bots.rule_based.phalanx_intel import (
     coordinate_dict,
     normalize_coordinate,
 )
+from bots.shared import simclock  # noqa: E402
 
 
 _LEDGER_VERSION = 1
@@ -579,12 +580,12 @@ def build_intercept_safety_callbacks(
         }
         if exc is not None:
             evidence["error"] = f"{type(exc).__name__}: {exc}"
-        return GateDecision(False, time.time(), code, False, evidence)
+        return GateDecision(False, simclock.now(), code, False, evidence)
 
     def passed(code: str, gate: str, **evidence: Any) -> GateDecision:
         return GateDecision(
             True,
-            time.time(),
+            simclock.now(),
             code,
             False,
             {
@@ -690,7 +691,7 @@ def build_intercept_safety_callbacks(
     def bashing(_client: Any, candidate: ReturnInterceptPlan) -> GateDecision:
         try:
             checked_plan(candidate)
-            now = time.time()
+            now = simclock.now()
             state = raider._load_state(email)
             if not isinstance(state, dict):
                 raise InterceptPlanError("raider attack state is unavailable")
@@ -935,7 +936,7 @@ def build_intercept_safety_callbacks(
                 combat_state["ships"],
                 combat_state["levels"],
                 state,
-                time.time(),
+                simclock.now(),
                 have_rec=combat_state["have_rec"],
                 min_loot=combat_state["min_loot"],
                 debris_factor=combat_state["debris_factor"],
@@ -997,7 +998,7 @@ def build_intercept_safety_callbacks(
         cache = PhalanxObservationCache(email)
         observation = cache.latest_exact(
             current.target_coordinates,
-            server_now=time.time(),
+            server_now=simclock.now(),
             max_age_seconds=current.max_phalanx_age_seconds,
             source_moon=source_moon,
         )
@@ -1029,7 +1030,7 @@ def build_intercept_safety_callbacks(
         )
         if isinstance(flight, bool) or not isinstance(flight, int) or flight <= 0:
             raise InterceptPlanError("authoritative route timing is unavailable")
-        now = time.time()
+        now = simclock.now()
         return TimingRevalidation(
             server_time=now,
             own_flight_seconds=flight,
@@ -1187,7 +1188,7 @@ def _transition(
     record.update(updates)
     record["status"] = status
     record["reason"] = reason
-    record["updated_at"] = time.time()
+    record["updated_at"] = simclock.now()
     _atomic_write(path, ledger)
 
 
@@ -1206,8 +1207,8 @@ def _new_record(plan: ReturnInterceptPlan) -> dict[str, Any]:
         "plan": plan.to_dict(),
         "stage": stage,
         "dispatch": None,
-        "created_at": time.time(),
-        "updated_at": time.time(),
+        "created_at": simclock.now(),
+        "updated_at": simclock.now(),
     }
 
 
@@ -1435,7 +1436,7 @@ def _run_stage(
             reason=_reason(decision.code, "jump gate readiness gate did not pass"),
         )
         return _outcome(record)
-    stage_record.update({"status": "sending", "send_started_at": time.time()})
+    stage_record.update({"status": "sending", "send_started_at": simclock.now()})
     try:
         _transition(
             ledger,
@@ -1487,7 +1488,7 @@ def _run_stage(
         )
         _transition(ledger, path, record, "rejected", reason=stage_record["reason"])
         return _outcome(record)
-    stage_record.update({"status": "sent", "sent_at": time.time(), "response": dict(result)})
+    stage_record.update({"status": "sent", "sent_at": simclock.now(), "response": dict(result)})
     try:
         _transition(
             ledger,
@@ -1745,7 +1746,7 @@ def execute_due_intercept(
                     "sending",
                     reason=_reason("sending", "durable attack send boundary entered"),
                     dispatch=dispatch,
-                    send_started_at=time.time(),
+                    send_started_at=simclock.now(),
                 )
             except InterceptLedgerError as exc:
                 return {
@@ -1805,7 +1806,7 @@ def execute_due_intercept(
                     "sent",
                     reason=_reason("sent", "checked fleet API acknowledged the attack"),
                     send_response=dict(result),
-                    sent_at=time.time(),
+                    sent_at=simclock.now(),
                 )
             except InterceptLedgerError:
                 return _outcome(record, override_status="ambiguous")

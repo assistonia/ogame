@@ -1,0 +1,14 @@
+{
+  "name": "smoke",
+  "universe": {"speed": 10, "turn_seconds": 900, "turns": 8, "class": "collector"},
+  "groups": [
+    {"name": "classic", "prefix": "cl", "count": 2, "controller": "classic", "personalities": ["miner", "raider"]},
+    {"name": "static", "prefix": "st", "count": 2, "controller": "policy_static", "personalities": ["miner", "raider"]},
+    {"name": "llm", "prefix": "ll", "count": 2, "controller": "policy_llm", "personalities": ["miner", "raider"]}
+  ],
+  "farms": {"count": 2, "inactive_days": 10, "mines": 8, "resources": 20000},
+  "llm": {"enabled": true, "model": "claude-haiku-5-5", "budget_usd": 1.0, "every_turns": 4, "parallel": 2},
+  "parallel": 6,
+  "score_every": 2,
+  "checkpoint_every": 8
+}

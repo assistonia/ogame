@@ -40,6 +40,7 @@ from typing import Any
 
 from bots.rule_based import explorer, fleetsave
 from bots.shared import db_reader, fleet, planets
+from bots.shared import simclock  # noqa: E402
 
 
 RESOURCE_NAMES = ("metal", "crystal", "deuterium")
@@ -329,7 +330,7 @@ def _serialized(path: pathlib.Path):
 
 
 def _empty_ledger() -> dict[str, Any]:
-    return {"version": LEDGER_VERSION, "commands": {}, "updated_at": int(time.time())}
+    return {"version": LEDGER_VERSION, "commands": {}, "updated_at": int(simclock.now())}
 
 
 def _load_ledger(path: pathlib.Path) -> dict[str, Any]:
@@ -361,7 +362,7 @@ def _load_ledger(path: pathlib.Path) -> dict[str, Any]:
 
 
 def _atomic_write_ledger(path: pathlib.Path, ledger: dict[str, Any]) -> None:
-    ledger["updated_at"] = int(time.time())
+    ledger["updated_at"] = int(simclock.now())
     try:
         payload = json.dumps(
             ledger, ensure_ascii=True, sort_keys=True, separators=(",", ":"), allow_nan=False
@@ -395,7 +396,7 @@ def _atomic_write_ledger(path: pathlib.Path, ledger: dict[str, Any]) -> None:
 
 
 def _new_record(plan: dict[str, Any]) -> dict[str, Any]:
-    now = int(time.time())
+    now = int(simclock.now())
     return {
         "command_id": plan["command_id"],
         "state": "planned",
@@ -415,7 +416,7 @@ def _transition(
 ) -> None:
     if state not in TRANSFER_STATES:
         raise _LedgerError(f"invalid transfer state {state!r}")
-    now = int(time.time())
+    now = int(simclock.now())
     record.update(fields)
     record["state"] = state
     record["updated_at"] = now
@@ -837,7 +838,7 @@ def _reconcile_existing(
                     record,
                     "sent",
                     mission_matches=matches,
-                    reconciled_at=int(time.time()),
+                    reconciled_at=int(simclock.now()),
                 )
             except _LedgerError as exc:
                 return _outcome(
@@ -859,7 +860,7 @@ def _reconcile_existing(
                 path,
                 record,
                 "confirmed",
-                confirmed_at=int(time.time()),
+                confirmed_at=int(simclock.now()),
                 confirmation="previously acknowledged transport is no longer active",
             )
         except _LedgerError as exc:
@@ -907,7 +908,7 @@ def _dispatch_transport(
             record,
             "sending",
             dispatch=dispatch,
-            send_started_at=int(time.time()),
+            send_started_at=int(simclock.now()),
             reason=None,
         )
     except _LedgerError as exc:
@@ -951,7 +952,7 @@ def _dispatch_transport(
                 path,
                 record,
                 "sent",
-                sent_at=int(time.time()),
+                sent_at=int(simclock.now()),
                 server_message=message,
                 reason=None,
             )
@@ -977,7 +978,7 @@ def _dispatch_transport(
                 path,
                 record,
                 "sent",
-                sent_at=int(time.time()),
+                sent_at=int(simclock.now()),
                 mission_matches=reconciliation["matches"],
                 server_message=message,
                 reason=None,
@@ -1037,7 +1038,7 @@ def _execute_planned(
     restore_required = False
     outcome: dict[str, Any] | None = None
     try:
-        if "deadline" in plan and int(time.time()) >= plan["deadline"]:
+        if "deadline" in plan and int(simclock.now()) >= plan["deadline"]:
             raise _PreflightRejection(
                 "deadline_expired", "transfer deadline expired before dispatch"
             )
@@ -1146,7 +1147,7 @@ def _execute_planned(
                     "sent",
                     dispatch=dispatch,
                     mission_matches=matching["matches"],
-                    reconciled_at=int(time.time()),
+                    reconciled_at=int(simclock.now()),
                     reason=None,
                 )
             except _LedgerError as exc:
@@ -1180,7 +1181,7 @@ def _execute_planned(
                 raise _PreflightRejection(
                     "source_changed", "current planet changed immediately before send"
                 )
-            if "deadline" in plan and int(time.time()) >= plan["deadline"]:
+            if "deadline" in plan and int(simclock.now()) >= plan["deadline"]:
                 raise _PreflightRejection(
                     "deadline_expired", "transfer deadline expired during preflight"
                 )
@@ -1369,7 +1370,7 @@ def suggest_bootstrap_equalization_transfers(
         normalized_deadline = None
         if deadline is not None:
             normalized_deadline = _strict_int(deadline, "deadline", 1, MAX_DEADLINE)
-            if normalized_deadline <= int(time.time()):
+            if normalized_deadline <= int(simclock.now()):
                 raise _ValidationError("deadline_expired", "suggestion deadline has expired")
         if any(targets[name] < reserves[name] for name in RESOURCE_NAMES):
             raise _ValidationError(

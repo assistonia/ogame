@@ -50,6 +50,7 @@ from __future__ import annotations
 from bots.shared import fleet
 from bots.shared import db_reader
 import time
+from bots.shared import simclock  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # 세이브 대상 함선 가치표 (metal+crystal+deuterium 건조가, ogamex *ShipObjects.php 실측)
@@ -262,7 +263,7 @@ def recent_hostile_attack(email: str, *, now: float | None = None) -> bool:
     try:
         from bots.rule_based import threat
 
-        current = time.time() if now is None else float(now)
+        current = simclock.now() if now is None else float(now)
         return bool(threat._fetch_defender_reports(  # noqa: SLF001 - 공용 DB 경계 재사용
             email, current - ADAPTIVE_THREAT_WINDOW_SEC
         ))
