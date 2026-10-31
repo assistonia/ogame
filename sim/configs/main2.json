@@ -1,0 +1,96 @@
+{
+  "name": "main2",
+  "universe": {
+    "speed": 10,
+    "turn_seconds": 900,
+    "turns": 960,
+    "class": "collector"
+  },
+  "groups": [
+    {
+      "name": "classic",
+      "prefix": "cl",
+      "count": 8,
+      "controller": "classic",
+      "personalities": [
+        "miner",
+        "miner",
+        "raider",
+        "raider",
+        "turtle",
+        "turtle",
+        "explorer",
+        "hybrid"
+      ]
+    },
+    {
+      "name": "static",
+      "prefix": "st",
+      "count": 8,
+      "controller": "policy_static",
+      "personalities": [
+        "miner",
+        "miner",
+        "raider",
+        "raider",
+        "turtle",
+        "turtle",
+        "explorer",
+        "hybrid"
+      ]
+    },
+    {
+      "name": "llm",
+      "prefix": "ll",
+      "count": 8,
+      "controller": "policy_llm",
+      "personalities": [
+        "miner",
+        "miner",
+        "raider",
+        "raider",
+        "turtle",
+        "turtle",
+        "explorer",
+        "hybrid"
+      ]
+    },
+    {
+      "name": "llm_locked",
+      "prefix": "lk",
+      "count": 8,
+      "controller": "policy_llm",
+      "personalities": [
+        "miner",
+        "miner",
+        "raider",
+        "raider",
+        "turtle",
+        "turtle",
+        "explorer",
+        "hybrid"
+      ],
+      "llm_locked_keys": [
+        "personality",
+        "defense_ratio"
+      ]
+    }
+  ],
+  "farms": {
+    "count": 8,
+    "inactive_days": 10,
+    "mines": 10,
+    "resources": 30000
+  },
+  "llm": {
+    "enabled": true,
+    "model": "claude-sonnet-5-5",
+    "budget_usd": 32.0,
+    "every_turns": 32,
+    "parallel": 4
+  },
+  "parallel": 8,
+  "score_every": 4,
+  "checkpoint_every": 96,
+  "seed": 2
+}

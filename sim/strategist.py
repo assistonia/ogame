@@ -92,6 +92,10 @@ def _compact_snapshot(email: str) -> dict[str, Any]:
     snap = empire_snapshot.build_empire_snapshot(email)
     snap.pop("secondary_goals", None)
     snap.pop("worlds", None)  # duplicate of planets + moons
+    ns = snap.get("normalized_state")
+    if isinstance(ns, dict) and isinstance(ns.get("worlds"), list):
+        # worlds = planets + moons; keep only the moons so nothing is lost
+        ns["worlds"] = [w for w in ns["worlds"] if w.get("world_type") != "planet"]
     return snap
 
 
@@ -105,7 +109,7 @@ def _recent_feedback(account: str, limit: int = 15) -> list[dict[str, Any]]:
 
 
 def build_prompt(*, email: str, persona: str, policy: dict, standings: dict, turn: int,
-                 game_time_iso: str, engine_log: list[str]) -> str:
+                 game_time_iso: str, engine_log: list[str], locked: list[str] | None = None) -> str:
     account = email.split("@", 1)[0]
     context = {
         "you": account,
@@ -120,8 +124,13 @@ def build_prompt(*, email: str, persona: str, policy: dict, standings: dict, tur
         "recent_engine_feedback": _recent_feedback(account),
         "empire": _compact_snapshot(email),
     }
+    lock_note = ""
+    if locked:
+        lock_note = ("\n\nThe operator has fixed these policy fields; any change you make to them is "
+                     "ignored: " + ", ".join(locked) + ".")
     return (
         POLICY_SCHEMA
+        + lock_note
         + "\n\nCurrent situation (JSON):\n"
         + json.dumps(context, ensure_ascii=False, separators=(",", ":"), default=str)
         + "\n\nWrite the next policy JSON now."

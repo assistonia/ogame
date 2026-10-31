@@ -109,6 +109,8 @@ class Run:
                     "controller": g["controller"],  # classic | policy_static | policy_llm
                     "personality": personalities[i % len(personalities)],
                     "persona": g.get("persona", ""),
+                    # policy keys the LLM may not change (they stay at the initial policy)
+                    "locked": list(g.get("llm_locked_keys", [])),
                 })
         return accounts
 
@@ -216,11 +218,14 @@ class Run:
             prompt = strategist.build_prompt(
                 email=a["email"], persona=a["persona"] or f"{a['personality']} player", policy=base,
                 standings={"you": mine, "players": stand["players"], "top": stand["top"]},
-                turn=turn, game_time_iso=iso, engine_log=self.engine_log.get(a["account"], []))
+                turn=turn, game_time_iso=iso, engine_log=self.engine_log.get(a["account"], []),
+                locked=a.get("locked", []))
             try:
                 text, cost = self.llm.ask(strategist.SYSTEM_PROMPT, prompt)
                 update = strategist.parse_policy(text)
                 merged = strategist.merge_policy(base, update, now, ttl)
+                for key in a.get("locked", []):
+                    merged[key] = base.get(key)
                 strategist.write_policy(self.policy_dir, a["account"], merged)
                 return (a, True, cost, merged, None)
             except BudgetExceeded as exc:
