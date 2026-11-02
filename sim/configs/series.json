@@ -93,6 +93,6 @@
   },
   "parallel": 8,
   "score_every": 4,
-  "checkpoint_every": 96,
+  "checkpoint_every": 24,
   "seed": 2
 }
