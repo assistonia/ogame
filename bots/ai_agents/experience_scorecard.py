@@ -24,6 +24,7 @@ import sqlite3
 import statistics
 from collections import Counter, defaultdict
 from typing import Any, Mapping
+from bots.shared import simclock  # noqa: E402
 
 
 SCHEMA_VERSION = 2
@@ -48,7 +49,7 @@ TECH_TREE_MARKER = pathlib.Path(__file__).with_name(".tech_tree_deployed")
 
 
 def _utc_now() -> dt.datetime:
-    return dt.datetime.now(dt.timezone.utc)
+    return simclock.utcnow()
 
 
 def _parse_time(value: str | None) -> dt.datetime | None:

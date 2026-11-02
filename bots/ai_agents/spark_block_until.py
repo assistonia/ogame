@@ -10,8 +10,9 @@ import glob
 import json
 import os
 import time
+from bots.shared import simclock  # noqa: E402
 
-DEFAULT = int(time.time()) + 5 * 3600
+DEFAULT = int(simclock.now()) + 5 * 3600
 EXHAUSTED = 95.0  # used_percent 이 값 이상이면 소진으로 판정
 
 

@@ -68,6 +68,7 @@ from bots.rule_based.personality import (
     plan_secondary,
     prereqs_met,
 )
+from bots.shared import simclock  # noqa: E402
 
 POLICY_DIR = pathlib.Path(__file__).resolve().parent / "policies"
 
@@ -189,7 +190,7 @@ def _is_expired(raw: dict) -> bool:
         ts = datetime.datetime.fromisoformat(updated.replace("Z", "+00:00"))
     except ValueError:
         return False
-    now = datetime.datetime.now(ts.tzinfo)
+    now = simclock.utcnow().astimezone(ts.tzinfo) if ts.tzinfo else simclock.utcnow().replace(tzinfo=None)
     return now > ts + datetime.timedelta(hours=float(ttl))
 
 
@@ -2383,7 +2384,7 @@ def _legacy_command_id(
     action: str,
     identity: Any,
 ) -> str:
-    stamp = datetime.datetime.now(datetime.timezone.utc).isoformat(
+    stamp = simclock.utcnow().isoformat(
         timespec="microseconds"
     )
     raw = json.dumps(

@@ -1,0 +1,4 @@
+[submodule "server/ogamex"]
+	path = server/ogamex
+	url = https://github.com/lanedirt/ogamex
+	ignore = dirty

@@ -23,6 +23,7 @@ from typing import Any
 from bots.rule_based import battle_sim
 from bots.shared import db_reader
 from bots.shared.game_objects import NAME_TO_ID
+from bots.shared import simclock  # noqa: E402
 
 
 STATE_DIR = pathlib.Path(__file__).resolve().parent / ".battle_guard_state"
@@ -94,7 +95,7 @@ def record_prediction(
         "ev": float(decision.get("ev", 0.0) or 0.0),
         "recommend": bool(decision.get("recommend", False)),
         "mode": mode,
-        "sent_at": float(time.time() if sent_at is None else sent_at),
+        "sent_at": float(simclock.now() if sent_at is None else sent_at),
     }
     if isinstance(cohort, str) and cohort and len(cohort) <= 64:
         prediction["cohort"] = cohort
@@ -182,7 +183,7 @@ def _record_trip_event(email: str, predicted: float, actual: float) -> None:
 
 def reconcile(email: str, *, now: float | None = None) -> list[dict[str, Any]]:
     """보관된 예측을 실제 보고서와 대조하고 새로 해결된 관측 목록을 반환."""
-    now = time.time() if now is None else float(now)
+    now = simclock.now() if now is None else float(now)
     state = _load(email)
     pending = [p for p in state.get("pending", []) if isinstance(p, dict)]
     if not pending:

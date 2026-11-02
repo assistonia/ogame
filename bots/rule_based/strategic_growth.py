@@ -21,6 +21,7 @@ from typing import Any
 
 from bots.rule_based.personality import prereqs_met
 from bots.rule_based import production_capacity
+from bots.shared import simclock  # noqa: E402
 
 
 STATE_DIR = pathlib.Path(__file__).resolve().parent / ".strategy_state"
@@ -299,7 +300,7 @@ def record_raid_opportunity(
         STATE_DIR.mkdir(parents=True, exist_ok=True)
         state = _read_state(email)
         state.update({
-            "updated_at": time.time(),
+            "updated_at": simclock.now(),
             "target": ":".join(map(str, target)) if target else None,
             "potential_loot": potential,
             "realized_loot": realized,
@@ -320,7 +321,7 @@ def record_raid_opportunity(
 def opportunity_snapshot(email: str, *, max_age_sec: int = 6 * 3600) -> dict[str, Any]:
     state = _read_state(email)
     updated = float(state.get("updated_at", 0.0) or 0.0)
-    if updated <= 0 or time.time() - updated > max_age_sec:
+    if updated <= 0 or simclock.now() - updated > max_age_sec:
         return {"status": "none"}
     return {"status": "ready", **state}
 

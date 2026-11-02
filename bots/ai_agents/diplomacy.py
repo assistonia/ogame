@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any
 
 from bots.shared import db_reader
+from bots.shared import simclock  # noqa: E402
 
 
 LEDGER_VERSION = 1
@@ -220,7 +221,7 @@ def eligible_participants(email: str) -> list[dict[str, Any]]:
 
 def _contract_snapshot(email: str, ledger: Mapping[str, Any]) -> list[dict[str, Any]]:
     normalized = str(email).strip().lower()
-    now = time.time()
+    now = simclock.now()
     out: list[dict[str, Any]] = []
     for item in ledger.get("contracts", []):
         if not isinstance(item, Mapping):
@@ -348,7 +349,7 @@ def execute_policy(
     plans = policy["messages"][:MAX_OUTBOUND_PER_TICK]
     if not plans:
         return [], []
-    current = time.time() if now is None else float(now)
+    current = simclock.now() if now is None else float(now)
     peers = {row["player_id"]: row for row in eligible_participants(email)}
     outcomes: list[dict[str, Any]] = []
     notes: list[str] = []
@@ -511,7 +512,7 @@ def blocked_player_ids(
 ) -> set[int]:
     """Return other parties covered by an active NAP, resolved to game user IDs."""
     normalized = str(email).strip().lower()
-    current = time.time() if now is None else float(now)
+    current = simclock.now() if now is None else float(now)
     peer_emails: set[str] = set()
     ledger = _read_ledger(ledger_path)
     for contract in ledger.get("contracts", []):

@@ -6,13 +6,14 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 from pathlib import Path
 from urllib.parse import urlparse
 
 import requests
 
-BASE_URL = "http://localhost"
+BASE_URL = os.environ.get("OGAME_BASE_URL", "http://localhost")
 DEFAULT_CONNECT_TIMEOUT_SEC = 5.0
 DEFAULT_READ_TIMEOUT_SEC = 30.0
 DEFAULT_REQUEST_TIMEOUT = (DEFAULT_CONNECT_TIMEOUT_SEC, DEFAULT_READ_TIMEOUT_SEC)

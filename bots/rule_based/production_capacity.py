@@ -14,6 +14,7 @@ import os
 import time
 
 from bots.shared import db_reader
+from bots.shared import simclock  # noqa: E402
 
 
 DEFAULT_SHIP_QUEUE_HORIZON_SECONDS = 3 * 3600
@@ -123,7 +124,7 @@ def production_queue_snapshot(
     closed without duplicating exception handling or accidentally treating an
     unavailable queue as empty.
     """
-    now = int(time.time())
+    now = int(simclock.now())
     fallback_speed = _fallback_economy_speed()
     try:
         conn = db_reader._conn()

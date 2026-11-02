@@ -40,6 +40,7 @@ import time
 import pymysql
 
 from bots.shared.game_objects import ID_TO_NAME, RESEARCH, SHIPS, SOLAR_SATELLITE
+from bots.shared import simclock  # noqa: E402
 
 # 읽기 전용 계정(SELECT 권한만). 실수로도 쓰기가 불가능하도록 별도 유저를 쓴다.
 DB_HOST = os.environ.get("OGAME_DB_HOST", "127.0.0.1")
@@ -73,12 +74,31 @@ def _conn() -> "pymysql.connections.Connection":
     conn = getattr(_local, "conn", None)
     if conn is None:
         conn = _local.conn = _connect()
-        return conn
-    try:
-        conn.ping(reconnect=False)
-    except Exception:  # noqa: BLE001 - 끊긴 커넥션이면 재연결(실패 시 예외 → 호출부 HTTP 폴백)
-        conn = _local.conn = _connect()
+    else:
+        try:
+            conn.ping(reconnect=False)
+        except Exception:  # noqa: BLE001 - 끊긴 커넥션이면 재연결(실패 시 예외 → 호출부 HTTP 폴백)
+            conn = _local.conn = _connect()
+    _sync_db_clock(conn)
     return conn
+
+
+def _sync_db_clock(conn) -> None:
+    """Make NOW()/UNIX_TIMESTAMP() in this session follow the game clock.
+
+    SQL that ages reports or windows events with NOW() must agree with the
+    virtual clock of the turn-based simulator. Outside the simulator the
+    session clock is reset to the server's real time (SET timestamp = DEFAULT).
+    """
+    pinned = simclock.pinned()
+    if getattr(conn, "_sim_ts", "unset") == pinned:
+        return
+    with conn.cursor() as cur:
+        if pinned is None:
+            cur.execute("SET timestamp = DEFAULT")
+        else:
+            cur.execute("SET timestamp = %s", (int(pinned),))
+    conn._sim_ts = pinned
 
 
 # --- 지연 정산이 필요한 함대 감지 -----------------------------------------
@@ -103,7 +123,7 @@ def has_due_fleet_missions_db(email: str, now_ts: int | None = None) -> bool:
     here because the server query also relies on ``processed`` rather than a
     separate canceled predicate.
     """
-    current_time = int(time.time()) if now_ts is None else int(now_ts)
+    current_time = int(simclock.now()) if now_ts is None else int(now_ts)
     conn = _conn()
     with conn.cursor() as cur:
         cur.execute(
@@ -177,7 +197,7 @@ def get_status_db(email: str, planet_id: int | None = None) -> dict:
     if row is None:
         raise RuntimeError(f"planet not found for email={email!r} planet_id={planet_id!r}")
 
-    now = int(time.time())
+    now = int(simclock.now())
     elapsed_h = max(0, now - int(row["time_last_update"])) / 3600.0
     return {
         "metal": _estimate_resource(
@@ -217,7 +237,7 @@ def get_resource_state_db(email: str, planet_id: int | None = None) -> dict:
     if row is None:
         raise RuntimeError(f"planet not found for email={email!r} planet_id={planet_id!r}")
 
-    now = int(time.time())
+    now = int(simclock.now())
     elapsed_h = max(0, now - int(row["time_last_update"])) / 3600.0
     return {
         # 배치 경로는 users.planet_current 를 바꾸지 않고 행성을 명시한다.
@@ -450,7 +470,7 @@ def get_levels_db(email: str, planet_id: int | None = None) -> dict[int, int]:
             for name in _RESEARCH_NAMES:
                 levels[_NAME_TO_ID[name]] = int(tech[name])
 
-        now = int(time.time())
+        now = int(simclock.now())
         # 3) 미정산 완료 건물/시설 큐 → 레벨 가산(retrieveFinished 조건 그대로).
         cur.execute(
             "SELECT object_id, object_level_target FROM building_queues "

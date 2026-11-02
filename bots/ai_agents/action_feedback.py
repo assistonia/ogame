@@ -14,6 +14,7 @@ from collections.abc import Mapping
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from bots.shared import simclock  # noqa: E402
 
 
 STORE_VERSION = 1
@@ -180,7 +181,7 @@ def _normalize_outcome(outcome: Mapping[str, Any]) -> dict[str, Any]:
 
     record: dict[str, Any] = {
         "feedback_version": STORE_VERSION,
-        "recorded_at": datetime.now(timezone.utc)
+        "recorded_at": simclock.utcnow()
         .isoformat(timespec="seconds")
         .replace("+00:00", "Z"),
         "command_id": command_id.strip(),

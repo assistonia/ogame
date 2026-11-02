@@ -11,6 +11,7 @@ from typing import Any
 from bots.shared import db_reader
 from bots.shared import planets as planets_mod
 from bots.shared.game_objects import object_cost, ship_cost, solar_satellite_energy_each
+from bots.shared import simclock  # noqa: E402
 
 try:
     from bots.rule_based.production_capacity import cap_ship_amount as _cap_ship_amount
@@ -556,7 +557,7 @@ def _finish(
             "last_status": status,
             "last_reason": reason,
             "last_action": action,
-            "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(
+            "updated_at": simclock.utcnow().isoformat(
                 timespec="seconds"
             ),
         }
