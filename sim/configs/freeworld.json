@@ -1,0 +1,82 @@
+{
+  "name": "freeworld",
+  "universe": {
+    "speed": 10,
+    "turn_seconds": 900,
+    "turns": 960,
+    "class": "collector"
+  },
+  "groups": [
+    {
+      "name": "classic",
+      "prefix": "cl",
+      "count": 8,
+      "controller": "classic",
+      "personalities": [
+        "miner",
+        "miner",
+        "raider",
+        "raider",
+        "turtle",
+        "turtle",
+        "explorer",
+        "hybrid"
+      ]
+    },
+    {
+      "name": "free",
+      "prefix": "fr",
+      "count": 8,
+      "controller": "policy_llm",
+      "free": true,
+      "personalities": [
+        "hybrid"
+      ],
+      "persona": "no assigned role: you choose who you are"
+    },
+    {
+      "name": "static",
+      "prefix": "st",
+      "count": 8,
+      "controller": "policy_static",
+      "personalities": [
+        "miner",
+        "miner",
+        "raider",
+        "raider",
+        "turtle",
+        "turtle",
+        "explorer",
+        "hybrid"
+      ]
+    },
+    {
+      "name": "free",
+      "prefix": "fw",
+      "count": 8,
+      "controller": "policy_llm",
+      "free": true,
+      "personalities": [
+        "hybrid"
+      ],
+      "persona": "no assigned role: you choose who you are"
+    }
+  ],
+  "farms": {
+    "count": 8,
+    "inactive_days": 10,
+    "mines": 10,
+    "resources": 30000
+  },
+  "llm": {
+    "enabled": true,
+    "model": "claude-sonnet-5-5",
+    "budget_usd": 20.0,
+    "every_turns": 48,
+    "parallel": 4
+  },
+  "parallel": 8,
+  "score_every": 4,
+  "checkpoint_every": 24,
+  "seed": 7
+}

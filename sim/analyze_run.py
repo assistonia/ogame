@@ -21,7 +21,8 @@ import sqlite3
 import subprocess
 
 DB_CONTAINER = "ogamex-ogamex-db-1"
-GROUPS = {"cl": "classic", "st": "static", "ll": "llm", "lk": "llm_locked", "le": "llm_econ"}
+GROUPS = {"cl": "classic", "st": "static", "ll": "llm", "lk": "llm_locked", "le": "llm_econ",
+          "fr": "free", "fw": "free"}
 
 
 def mariadb(db: str | None, sql: str | None = None, stdin: bytes | None = None) -> str:

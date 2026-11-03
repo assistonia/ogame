@@ -111,6 +111,8 @@ class Run:
                     "persona": g.get("persona", ""),
                     # policy keys the LLM may not change (they stay at the initial policy)
                     "locked": list(g.get("llm_locked_keys", [])),
+                    # free-world player: no role, sets its own goal and targets
+                    "free": bool(g.get("free", False)),
                 })
         return accounts
 
@@ -202,6 +204,39 @@ class Run:
                 "by_account": {p["email"].split("@")[0]: {"rank": i + 1, "score": p["general"]}
                                for i, p in enumerate(players)}}
 
+    def world_view(self, scores: dict, now: int, window_sec: int) -> dict:
+        """Who lives where and who attacked whom, for free-world players."""
+        names = dict(server.query("SELECT id, username FROM users"))
+        planets: dict[str, list[str]] = {}
+        for uid, g, sy, pos in server.query(
+                "SELECT user_id, galaxy, system, planet FROM planets "
+                "WHERE planet_type=1 AND destroyed=0 ORDER BY id"):
+            planets.setdefault(names.get(uid, "?"), []).append(f"{g}:{sy}:{pos}")
+        by = {p["email"].split("@")[0]: p for p in scores.get("players", [])}
+        players = []
+        for name, coords in sorted(planets.items()):
+            if name in ("Legor", "Admin", "?"):
+                continue
+            p = by.get(name, {})
+            players.append({"player": name, "planets": coords[:6],
+                            "score": p.get("general"), "military": p.get("military"),
+                            **({"inactive": True} if name.startswith("farm") else {})})
+        attacks: dict[tuple[str, str], list[int]] = {}
+        for owner, target, dep in server.query(
+                "SELECT f.user_id, p.user_id, f.time_departure FROM fleet_missions f "
+                "JOIN planets p ON p.id = f.planet_id_to "
+                "WHERE f.mission_type = 1 AND f.parent_id IS NULL AND f.user_id <> p.user_id"):
+            a, v = names.get(owner, "?"), names.get(target, "?")
+            if v.startswith("farm"):
+                continue
+            c = attacks.setdefault((a, v), [0, 0])
+            c[0] += 1
+            c[1] += int(dep) >= now - window_sec
+        log = [{"attacker": a, "victim": v, "total": c[0], "recent": c[1]}
+               for (a, v), c in sorted(attacks.items(), key=lambda kv: -kv[1][0])]
+        return {"players": players, "attacks_between_players": log[:40],
+                "note": "recent = since your last policy; farm raids not listed"}
+
     def refresh_llm(self, turn: int, conn: sqlite3.Connection, scores: dict) -> None:
         targets = [a for a in self.accounts if a["controller"] == "policy_llm"]
         if not targets or self.llm is None:
@@ -210,6 +245,10 @@ class Run:
         iso = dt.datetime.fromtimestamp(now, dt.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
         stand = self.standings(scores)
         ttl = self.policy_ttl_hours()
+        world = None
+        if any(a.get("free") for a in targets):
+            window = self.cfg["llm"].get("every_turns", 32) * self.cfg["universe"]["turn_seconds"]
+            world = self.world_view(scores, int(now), window)
 
         def one(a: dict):
             path = self.policy_dir / f"{a['account']}.json"
@@ -219,11 +258,12 @@ class Run:
                 email=a["email"], persona=a["persona"] or f"{a['personality']} player", policy=base,
                 standings={"you": mine, "players": stand["players"], "top": stand["top"]},
                 turn=turn, game_time_iso=iso, engine_log=self.engine_log.get(a["account"], []),
-                locked=a.get("locked", []))
+                locked=a.get("locked", []), world=world if a.get("free") else None)
             try:
-                text, cost = self.llm.ask(strategist.SYSTEM_PROMPT, prompt)
+                system = strategist.FREE_SYSTEM_PROMPT if a.get("free") else strategist.SYSTEM_PROMPT
+                text, cost = self.llm.ask(system, prompt)
                 update = strategist.parse_policy(text)
-                merged = strategist.merge_policy(base, update, now, ttl)
+                merged = strategist.merge_policy(base, update, now, ttl, free=a.get("free", False))
                 for key in a.get("locked", []):
                     merged[key] = base.get(key)
                 strategist.write_policy(self.policy_dir, a["account"], merged)

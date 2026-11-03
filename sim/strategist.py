@@ -38,6 +38,30 @@ Facts about the engine:
 
 Output ONLY one JSON object, no prose, no code fences."""
 
+# Free-world variant: no assigned role and no score target. The player decides
+# what it wants and may name whom to hit first and whom to leave alone.
+FREE_SYSTEM_PROMPT = SYSTEM_PROMPT.replace(
+    """Goal: maximise your empire's long-run total score (economy + research + military) and survive.
+Your persona is a preference, not a rule. Change strategy when the evidence says so.""",
+    """Nobody assigns you a goal or a role. Decide for yourself what kind of player you want to be and
+what you want from this universe: grow quietly, dominate, hunt, protect yourself, take revenge, spare
+some neighbours, explore, or anything else. You may change your mind. Write your current aim in "goal";
+you will see it again next time. There is no chat between players: other players only see what you do.""",
+) + """
+
+Extra levers you have in this world:
+- targeting.priority_targets: list of "galaxy:system:position" planets your raid engine tries first
+  (it still needs a fleet that can win and will skip targets it cannot reach).
+- targeting.excluded_systems: list of [galaxy, system] your engine will never attack (a one-sided truce).
+- "world" in the situation lists every player's planets, score and military, and who attacked whom."""
+
+FREE_SCHEMA_EXTRA = """
+Additional fields in this world:
+{
+  "goal": "one or two sentences in Korean: what you want and why",
+  "targeting": {"priority_targets": ["g:s:p", ...], "excluded_systems": [[g, s], ...]}
+}"""
+
 POLICY_SCHEMA = """Policy JSON fields (omit a field to keep the engine default):
 {
   "personality": "miner|raider|turtle|explorer|hybrid",
@@ -109,7 +133,8 @@ def _recent_feedback(account: str, limit: int = 15) -> list[dict[str, Any]]:
 
 
 def build_prompt(*, email: str, persona: str, policy: dict, standings: dict, turn: int,
-                 game_time_iso: str, engine_log: list[str], locked: list[str] | None = None) -> str:
+                 game_time_iso: str, engine_log: list[str], locked: list[str] | None = None,
+                 world: dict | None = None) -> str:
     account = email.split("@", 1)[0]
     context = {
         "you": account,
@@ -119,17 +144,24 @@ def build_prompt(*, email: str, persona: str, policy: dict, standings: dict, tur
         "standings": standings,
         "current_policy": {k: policy.get(k) for k in (
             "personality", "build_priority", "research_priority", "ship_strategy", "aggression",
-            "defense_ratio", "defense_strategy", "fleetsave", "energy_target", "note") if k in policy},
+            "defense_ratio", "defense_strategy", "fleetsave", "energy_target", "note", "goal") if k in policy},
         "recent_engine_turns": engine_log[-12:],
         "recent_engine_feedback": _recent_feedback(account),
         "empire": _compact_snapshot(email),
     }
+    if world is not None:
+        targeting = policy.get("targeting") or {}
+        context["current_policy"]["targeting"] = {
+            "priority_targets": targeting.get("priority_targets", []),
+            "excluded_systems": targeting.get("excluded_systems", [])}
+        context["world"] = world
     lock_note = ""
     if locked:
         lock_note = ("\n\nThe operator has fixed these policy fields; any change you make to them is "
                      "ignored: " + ", ".join(locked) + ".")
     return (
         POLICY_SCHEMA
+        + (FREE_SCHEMA_EXTRA if world is not None else "")
         + lock_note
         + "\n\nCurrent situation (JSON):\n"
         + json.dumps(context, ensure_ascii=False, separators=(",", ":"), default=str)
@@ -154,12 +186,28 @@ ALLOWED_KEYS = ("personality", "build_priority", "research_priority", "ship_stra
                 "defense_ratio", "defense_strategy", "fleetsave", "energy_target", "note")
 
 
-def merge_policy(base: dict[str, Any], update: dict[str, Any], now_ts: float, ttl_hours: float) -> dict[str, Any]:
-    """Apply the LLM's fields onto the previous policy file (unknown keys dropped)."""
+def merge_policy(base: dict[str, Any], update: dict[str, Any], now_ts: float, ttl_hours: float,
+                 free: bool = False) -> dict[str, Any]:
+    """Apply the LLM's fields onto the previous policy file (unknown keys dropped).
+
+    free=True also accepts "goal" and the two player-facing targeting lists;
+    the engine's other targeting switches are kept as they were."""
     out = copy.deepcopy(base)
     for key in ALLOWED_KEYS:
         if key in update:
             out[key] = update[key]
+    if free:
+        if "goal" in update:
+            out["goal"] = str(update["goal"])[:300]
+        tgt = update.get("targeting")
+        if isinstance(tgt, dict):
+            merged_tgt = dict(out.get("targeting") or {})
+            if isinstance(tgt.get("priority_targets"), list):
+                merged_tgt["priority_targets"] = [str(x) for x in tgt["priority_targets"]][:20]
+            if isinstance(tgt.get("excluded_systems"), list):
+                merged_tgt["excluded_systems"] = [x for x in tgt["excluded_systems"]
+                                                  if isinstance(x, list) and len(x) == 2][:40]
+            out["targeting"] = merged_tgt
     if out.get("personality") not in PERSONALITIES:
         out["personality"] = base.get("personality", "hybrid")
     out["updated_at"] = _iso(now_ts)

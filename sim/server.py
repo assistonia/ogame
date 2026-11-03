@@ -79,3 +79,10 @@ def ensure_readonly_db_user() -> None:
     _run("compose", "exec", "-T", "ogamex-db", "mariadb", "-uroot", "-ptoor", "-e",
          "CREATE USER IF NOT EXISTS 'botread'@'%' IDENTIFIED BY 'botread'; "
          "GRANT SELECT ON laravel.* TO 'botread'@'%'; FLUSH PRIVILEGES;")
+
+
+def query(sql: str) -> list[list[str]]:
+    """Read-only SQL against the game DB; rows as lists of strings."""
+    out = _run("compose", "exec", "-T", "ogamex-db", "mariadb", "-uroot", "-ptoor", "-N", "-B",
+               "laravel", "-e", sql, timeout=120)
+    return [line.split("\t") for line in out.splitlines() if line]
