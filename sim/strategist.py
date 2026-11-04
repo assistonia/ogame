@@ -55,6 +55,26 @@ Extra levers you have in this world:
 - targeting.excluded_systems: list of [galaxy, system] your engine will never attack (a one-sided truce).
 - "world" in the situation lists every player's planets, score and military, and who attacked whom."""
 
+# Free world with messages: players can talk and can promise not to attack.
+CHAT_SYSTEM_PROMPT = FREE_SYSTEM_PROMPT.replace(
+    "There is no chat between players: other players only see what you do.",
+    """Players can send each other short messages (see "messages" below and "world.inbox").
+Messages are cheap talk: nothing forces anyone to keep a promise, and some players may never answer.""",
+) + """
+- targeting.excluded_players: list of player names your engine will never spy on or attack.
+  Everyone can see who declared whom off-limits ("world.no_attack_declarations").
+- messages: up to 3 messages per policy update, each to one player name or "all".
+  They are delivered at the next policy update of the recipients (about 12 game hours)."""
+
+CHAT_SCHEMA_EXTRA = """
+Additional fields in this world:
+{
+  "goal": "one or two sentences in Korean: what you want and why",
+  "targeting": {"priority_targets": ["g:s:p", ...], "excluded_systems": [[g, s], ...],
+                "excluded_players": ["player name", ...]},
+  "messages": [{"to": "player name or all", "text": "Korean, at most 200 characters"}]
+}"""
+
 FREE_SCHEMA_EXTRA = """
 Additional fields in this world:
 {
@@ -134,7 +154,7 @@ def _recent_feedback(account: str, limit: int = 15) -> list[dict[str, Any]]:
 
 def build_prompt(*, email: str, persona: str, policy: dict, standings: dict, turn: int,
                  game_time_iso: str, engine_log: list[str], locked: list[str] | None = None,
-                 world: dict | None = None) -> str:
+                 world: dict | None = None, chat: bool = False) -> str:
     account = email.split("@", 1)[0]
     context = {
         "you": account,
@@ -153,7 +173,8 @@ def build_prompt(*, email: str, persona: str, policy: dict, standings: dict, tur
         targeting = policy.get("targeting") or {}
         context["current_policy"]["targeting"] = {
             "priority_targets": targeting.get("priority_targets", []),
-            "excluded_systems": targeting.get("excluded_systems", [])}
+            "excluded_systems": targeting.get("excluded_systems", []),
+            **({"excluded_players": targeting.get("excluded_players", [])} if chat else {})}
         context["world"] = world
     lock_note = ""
     if locked:
@@ -161,7 +182,7 @@ def build_prompt(*, email: str, persona: str, policy: dict, standings: dict, tur
                      "ignored: " + ", ".join(locked) + ".")
     return (
         POLICY_SCHEMA
-        + (FREE_SCHEMA_EXTRA if world is not None else "")
+        + ((CHAT_SCHEMA_EXTRA if chat else FREE_SCHEMA_EXTRA) if world is not None else "")
         + lock_note
         + "\n\nCurrent situation (JSON):\n"
         + json.dumps(context, ensure_ascii=False, separators=(",", ":"), default=str)
@@ -207,6 +228,8 @@ def merge_policy(base: dict[str, Any], update: dict[str, Any], now_ts: float, tt
             if isinstance(tgt.get("excluded_systems"), list):
                 merged_tgt["excluded_systems"] = [x for x in tgt["excluded_systems"]
                                                   if isinstance(x, list) and len(x) == 2][:40]
+            if isinstance(tgt.get("excluded_players"), list):
+                merged_tgt["excluded_players"] = [str(x)[:40] for x in tgt["excluded_players"]][:40]
             out["targeting"] = merged_tgt
     if out.get("personality") not in PERSONALITIES:
         out["personality"] = base.get("personality", "hybrid")
@@ -214,6 +237,21 @@ def merge_policy(base: dict[str, Any], update: dict[str, Any], now_ts: float, tt
     out["ttl_hours"] = ttl_hours
     out["autonomy"] = "full"
     out["note"] = str(out.get("note", ""))[:200]
+    return out
+
+
+def parse_messages(update: dict[str, Any], sender: str, names: set[str]) -> list[tuple[str, str]]:
+    """(recipient, text) pairs from an LLM update; unknown recipients dropped."""
+    out = []
+    msgs = update.get("messages")
+    if not isinstance(msgs, list):
+        return out
+    for m in msgs[:3]:
+        if not isinstance(m, dict):
+            continue
+        to, text = str(m.get("to", "")).strip(), str(m.get("text", "")).strip()[:200]
+        if text and to != sender and (to == "all" or to in names):
+            out.append((to, text))
     return out
 
 

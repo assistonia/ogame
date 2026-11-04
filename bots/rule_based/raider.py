@@ -2881,6 +2881,15 @@ def _raid_tick_inner(
             continue
         if len(coord) == 3:
             priority_targets.add(coord)
+    excluded_targets: set[tuple[int, int, int]] = set()
+    for item in targeting.get("excluded_targets", []) or []:
+        try:
+            coord = tuple(int(part) for part in str(item).split(":"))
+        except ValueError:
+            continue
+        if len(coord) == 3:
+            excluded_targets.add(coord)
+            priority_targets.discard(coord)
     excluded_raw = targeting.get("excluded_systems")
     excluded_systems = None
     if isinstance(excluded_raw, list):
@@ -3047,6 +3056,9 @@ def _raid_tick_inner(
         excluded_systems=excluded_systems,
         priority_targets=priority_targets,
     )
+
+    if excluded_targets:
+        candidates = [c for c in candidates if c["coord"] not in excluded_targets]
 
     # 모든 후보를 계정별로 분산한다. 명시 표적도 그 그룹 안에서 포화도 순환을 지킨다.
     if candidates:

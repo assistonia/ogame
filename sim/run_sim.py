@@ -89,6 +89,7 @@ class Run:
             CREATE TABLE IF NOT EXISTS llm_calls(turn INT, clock INT, account TEXT, ok INT,
               cost REAL, personality TEXT, note TEXT, error TEXT, policy TEXT);
             CREATE TABLE IF NOT EXISTS actions(turn INT, account TEXT, line TEXT);
+            CREATE TABLE IF NOT EXISTS messages(turn INT, sender TEXT, recipient TEXT, text TEXT);
         """)
         return conn
 
@@ -212,6 +213,7 @@ class Run:
                 "SELECT user_id, galaxy, system, planet FROM planets "
                 "WHERE planet_type=1 AND destroyed=0 ORDER BY id"):
             planets.setdefault(names.get(uid, "?"), []).append(f"{g}:{sy}:{pos}")
+        self.planets_by_player = planets
         by = {p["email"].split("@")[0]: p for p in scores.get("players", [])}
         players = []
         for name, coords in sorted(planets.items()):
@@ -237,6 +239,27 @@ class Run:
         return {"players": players, "attacks_between_players": log[:40],
                 "note": "recent = since your last policy; farm raids not listed"}
 
+    def chat_view(self, conn: sqlite3.Connection, turn: int, account: str, since_turn: int) -> dict:
+        """Inbox, own recent messages and public no-attack declarations for one player."""
+        inbox = [{"turn": t, "from": f, "to": r, "text": x} for t, f, r, x in conn.execute(
+            "SELECT turn, sender, recipient, text FROM messages WHERE turn >= ? AND sender <> ? "
+            "AND recipient IN (?, 'all') ORDER BY turn DESC, rowid DESC LIMIT 30",
+            (since_turn, account, account))]
+        sent = [{"turn": t, "to": r, "text": x} for t, r, x in conn.execute(
+            "SELECT turn, recipient, text FROM messages WHERE turn >= ? AND sender = ? "
+            "ORDER BY turn DESC LIMIT 6", (since_turn, account))]
+        return {"inbox": inbox, "your_recent_messages": sent,
+                "no_attack_declarations": self.no_attack}
+
+    def apply_excluded_players(self, policy: dict) -> dict:
+        """Translate targeting.excluded_players into exact planet coords for the engine."""
+        tgt = policy.get("targeting") or {}
+        coords = [c for name in tgt.get("excluded_players", [])
+                  for c in getattr(self, "planets_by_player", {}).get(name, [])]
+        tgt["excluded_targets"] = coords
+        policy["targeting"] = tgt
+        return policy
+
     def refresh_llm(self, turn: int, conn: sqlite3.Connection, scores: dict) -> None:
         targets = [a for a in self.accounts if a["controller"] == "policy_llm"]
         if not targets or self.llm is None:
@@ -249,6 +272,19 @@ class Run:
         if any(a.get("free") for a in targets):
             window = self.cfg["llm"].get("every_turns", 32) * self.cfg["universe"]["turn_seconds"]
             world = self.world_view(scores, int(now), window)
+        chat = bool(self.cfg.get("chat"))
+        every = self.cfg["llm"].get("every_turns", 32)
+        if chat and not hasattr(self, "no_attack"):
+            self.no_attack = {}
+            for a in targets:
+                try:
+                    pol = json.loads((self.policy_dir / f"{a['account']}.json").read_text())
+                    names = (pol.get("targeting") or {}).get("excluded_players") or []
+                    if names:
+                        self.no_attack[a["account"]] = names
+                except (OSError, ValueError):
+                    pass
+        known = set(getattr(self, "planets_by_player", {}))
 
         def one(a: dict):
             path = self.policy_dir / f"{a['account']}.json"
@@ -258,29 +294,49 @@ class Run:
                 email=a["email"], persona=a["persona"] or f"{a['personality']} player", policy=base,
                 standings={"you": mine, "players": stand["players"], "top": stand["top"]},
                 turn=turn, game_time_iso=iso, engine_log=self.engine_log.get(a["account"], []),
-                locked=a.get("locked", []), world=world if a.get("free") else None)
+                locked=a.get("locked", []),
+                world=({**world, **views[a["account"]]} if chat else world) if a.get("free") else None,
+                chat=chat and a.get("free", False))
             try:
-                system = strategist.FREE_SYSTEM_PROMPT if a.get("free") else strategist.SYSTEM_PROMPT
+                if a.get("free"):
+                    system = strategist.CHAT_SYSTEM_PROMPT if chat else strategist.FREE_SYSTEM_PROMPT
+                else:
+                    system = strategist.SYSTEM_PROMPT
                 text, cost = self.llm.ask(system, prompt)
                 update = strategist.parse_policy(text)
                 merged = strategist.merge_policy(base, update, now, ttl, free=a.get("free", False))
                 for key in a.get("locked", []):
                     merged[key] = base.get(key)
+                msgs = []
+                if chat and a.get("free"):
+                    merged = self.apply_excluded_players(merged)
+                    msgs = strategist.parse_messages(update, a["account"], known)
                 strategist.write_policy(self.policy_dir, a["account"], merged)
-                return (a, True, cost, merged, None)
+                return (a, True, cost, merged, None, msgs)
             except BudgetExceeded as exc:
-                return (a, False, 0.0, base, str(exc))
+                return (a, False, 0.0, base, str(exc), [])
             except Exception as exc:  # noqa: BLE001 - keep previous policy
-                return (a, False, 0.0, base, f"{type(exc).__name__}: {exc}"[:500])
+                return (a, False, 0.0, base, f"{type(exc).__name__}: {exc}"[:500], [])
 
         workers = self.cfg.get("llm", {}).get("parallel", 4)
+        views = {a["account"]: self.chat_view(conn, turn, a["account"], turn - 2 * every)
+                 for a in targets if chat and a.get("free")}
         with cf.ThreadPoolExecutor(max_workers=workers) as ex:
-            for a, ok, cost, pol, err in ex.map(one, targets):
-                conn.execute("INSERT INTO llm_calls VALUES(?,?,?,?,?,?,?,?,?)",
-                             (turn, int(now), a["account"], int(ok), cost, pol.get("personality"),
-                              pol.get("note", ""), err, json.dumps(pol, ensure_ascii=False) if ok else None))
-                self.log(f"  llm {a['account']}: {'ok' if ok else 'FAIL'} ${cost:.3f} "
-                         f"{pol.get('personality')} | {(pol.get('note') if ok else err) or ''}"[:220])
+            results = list(ex.map(one, targets))
+        for a, ok, cost, pol, err, msgs in results:
+            if chat and ok and a.get("free"):
+                self.no_attack[a["account"]] = (pol.get("targeting") or {}).get("excluded_players", [])
+                if not self.no_attack[a["account"]]:
+                    self.no_attack.pop(a["account"])
+                for to, text in msgs:
+                    conn.execute("INSERT INTO messages VALUES(?,?,?,?)", (turn, a["account"], to, text))
+                    self.log(f"  msg {a['account']} -> {to}: {text}"[:220])
+        for a, ok, cost, pol, err, _ in results:
+            conn.execute("INSERT INTO llm_calls VALUES(?,?,?,?,?,?,?,?,?)",
+                         (turn, int(now), a["account"], int(ok), cost, pol.get("personality"),
+                          pol.get("note", ""), err, json.dumps(pol, ensure_ascii=False) if ok else None))
+            self.log(f"  llm {a['account']}: {'ok' if ok else 'FAIL'} ${cost:.3f} "
+                     f"{pol.get('personality')} | {(pol.get('note') if ok else err) or ''}"[:220])
         conn.commit()
         if self.llm is not None:
             self.log(f"  llm ledger {self.llm.ledger()}")

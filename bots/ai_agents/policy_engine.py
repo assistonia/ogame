@@ -497,6 +497,14 @@ def load_policy(email: str) -> dict:
                     if coord not in cleaned_targets:
                         cleaned_targets.append(coord)
             pol["targeting"]["priority_targets"] = cleaned_targets
+        excluded_targets = targeting.get("excluded_targets")
+        if isinstance(excluded_targets, list):
+            # exact planets never spied on or attacked (sim free world: players declared off-limits)
+            pol["targeting"]["excluded_targets"] = [
+                item for item in excluded_targets
+                if isinstance(item, str) and len(item.split(":")) == 3
+                and all(part.isdigit() for part in item.split(":"))
+            ][:200]
 
     limits = raw.get("limits")
     if isinstance(limits, dict):
